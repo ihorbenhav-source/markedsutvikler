@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover"/>
-  <title>Markedsutvikler — Premium Agency + JSON Config Builder</title>
-  <meta name="description" content="Premium nettsider, SoMe og strategi. Interaktiv: case modal, pakke-bygger, AI-brief som genererer MU_CONFIG.json, preview og eksport av ferdig HTML."/>
+  <title>Markedsutvikler — WOW Agency + AI Config Builder</title>
+  <meta name="description" content="Premium nettsider, SoMe og strategi. Interaktivt: case modal, pakke-bygger, AI-brief som genererer MU_CONFIG.json, preview og eksport av ferdig HTML."/>
   <style>
     :root{
       --bg:#f6f8f9;
@@ -20,8 +20,6 @@
       --max: 1200px;
       --pad: 22px;
       --safeB: env(safe-area-inset-bottom, 0px);
-      --r1: 20px;
-      --r2: 26px;
     }
     [data-theme="dark"]{
       --bg:#050d13;
@@ -42,7 +40,7 @@
       background:
         radial-gradient(1200px 700px at 10% -10%, rgba(44,166,164,.22), transparent 55%),
         radial-gradient(900px 600px at 90% 10%, rgba(31,111,139,.18), transparent 55%),
-        radial-gradient(1100px 700px at 60% 110%, rgba(44,166,164,.14), transparent 55%),
+        radial-gradient(1200px 700px at 60% 110%, rgba(44,166,164,.14), transparent 55%),
         var(--bg);
       color:var(--ink);
       overflow-x:hidden;
@@ -90,38 +88,25 @@
       border-bottom:1px solid color-mix(in srgb, var(--stroke) 70%, transparent);
     }
     .nav{height:78px}
-    .brand{
-      display:flex; align-items:center; gap:12px; min-width:220px;
-      padding:10px 12px;
-      border-radius: 999px;
-      border:1px solid var(--stroke);
-      background: color-mix(in srgb, var(--panel) 75%, transparent);
-      box-shadow: var(--shadow2);
-    }
+    .brand{display:flex; align-items:center; gap:12px; min-width:220px}
     .brand img{width:34px; height:34px; object-fit:contain}
     .brand strong{letter-spacing:.2px}
-    .menu{display:flex; gap:12px; align-items:center}
+    .menu{display:flex; gap:18px; align-items:center}
     .menu a{
       color:var(--muted);
       font-weight:950;
       font-size:13px;
-      padding:10px 12px;
+      padding:10px 10px;
       border-radius:999px;
       transition: background .15s ease, color .15s ease;
-      border:1px solid transparent;
     }
-    .menu a:hover{
-      background: color-mix(in srgb, var(--panel) 70%, transparent);
-      color:var(--ink);
-      border-color: color-mix(in srgb, var(--stroke) 75%, transparent);
-    }
+    .menu a:hover{background: color-mix(in srgb, var(--panel) 70%, transparent); color:var(--ink)}
     .right{display:flex; align-items:center; gap:10px}
     .burger{display:none}
     @media (max-width: 920px){
       .menu{display:none}
       .burger{display:inline-flex}
       .nav{height:74px}
-      .brand{min-width:unset}
     }
 
     /* Drawer */
@@ -186,15 +171,13 @@
       letter-spacing:.2px;
       backdrop-filter: blur(14px);
     }
-    .kdot{
-      width:10px; height:10px; border-radius:999px;
-      background: linear-gradient(135deg, var(--a), var(--b));
+    .kdot{width:10px; height:10px; border-radius:999px; background: linear-gradient(135deg, var(--a), var(--b));
       box-shadow: 0 0 0 8px rgba(44,166,164,.12);
     }
     h1{
       margin:14px 0 12px;
-      font-size: clamp(38px, 4.6vw, 66px);
-      letter-spacing: -0.04em;
+      font-size: clamp(38px, 4.4vw, 62px);
+      letter-spacing: -0.03em;
       line-height: 1.02;
     }
     .lead{
@@ -202,7 +185,7 @@
       color: var(--muted);
       font-size: 18px;
       line-height: 1.55;
-      max-width: 62ch;
+      max-width: 58ch;
       font-weight:900;
     }
     .cta{display:flex; gap:12px; flex-wrap:wrap; margin-top:18px}
@@ -232,7 +215,7 @@
         linear-gradient(135deg, color-mix(in srgb, var(--panel) 35%, transparent), color-mix(in srgb, var(--panel2) 55%, transparent));
       box-shadow: var(--shadow);
       overflow:hidden;
-      min-height: 440px;
+      min-height: 420px;
       transform-style: preserve-3d;
     }
     .grid{
@@ -250,10 +233,10 @@
       width: 560px; height:560px;
       border-radius: 46% 54% 58% 42% / 44% 42% 58% 56%;
       background: conic-gradient(from 210deg, rgba(44,166,164,.95), rgba(31,111,139,.85), rgba(44,166,164,.95));
+      filter: blur(1px);
       opacity:.86;
       animation: float 9s ease-in-out infinite;
       box-shadow: 0 40px 120px rgba(0,0,0,.22);
-      filter: saturate(1.05);
     }
     .orb2{
       position:absolute; left:-220px; bottom:-260px;
@@ -305,7 +288,7 @@
     .tile p{margin:0; color:var(--muted); font-weight:1000; font-size:12px; line-height:1.45}
     .chart{
       margin-top:10px;
-      height: 150px;
+      height: 140px;
       border-radius: 18px;
       border:1px solid var(--stroke);
       background:
@@ -333,21 +316,22 @@
       border-radius: 12px;
       background: linear-gradient(180deg, rgba(44,166,164,.55), rgba(31,111,139,.35));
       border:1px solid rgba(44,166,164,.35);
+      filter: saturate(1.05);
     }
 
     /* Sections */
-    section{padding: 44px 0}
+    section{padding: 42px 0}
     .head{
       display:flex; align-items:flex-end; justify-content:space-between; gap:14px;
       margin-bottom: 16px;
     }
     .head h2{margin:0; font-size: clamp(22px, 2.6vw, 34px); letter-spacing:-.02em}
-    .head p{margin:0; color:var(--muted); max-width: 64ch; line-height:1.5; font-weight:1000; font-size:14px}
+    .head p{margin:0; color:var(--muted); max-width: 60ch; line-height:1.5; font-weight:1000; font-size:14px}
 
     /* Cards */
     .grid3{display:grid; grid-template-columns: repeat(3,1fr); gap:14px}
     .card{
-      border-radius: var(--r2);
+      border-radius: 24px;
       border:1px solid var(--stroke);
       background: var(--panel);
       box-shadow: var(--shadow2);
@@ -358,13 +342,12 @@
     }
     .card:hover{transform: translateY(-6px); box-shadow: var(--shadow); border-color: rgba(44,166,164,.45)}
     .card .ic{
-      width:52px; height:52px; border-radius: 18px;
+      width:48px; height:48px; border-radius: 16px;
       border:1px solid rgba(44,166,164,.35);
       background: linear-gradient(135deg, rgba(31,111,139,.18), rgba(44,166,164,.16));
       display:grid; place-items:center;
       margin-bottom: 12px;
       box-shadow: 0 18px 45px rgba(31,111,139,.14);
-      font-size:20px;
     }
     .card h3{margin:0 0 8px}
     .card p{margin:0 0 14px; color:var(--muted); line-height:1.55; font-weight:1000}
@@ -401,7 +384,7 @@
     .chip:hover{transform: translateY(-1px)}
     .portfolio{display:grid; grid-template-columns: repeat(3,1fr); gap:14px}
     .work{
-      border-radius: var(--r2);
+      border-radius: 24px;
       border:1px solid var(--stroke);
       background: var(--panel);
       box-shadow: var(--shadow2);
@@ -409,9 +392,7 @@
       position:relative;
       cursor:pointer;
       -webkit-tap-highlight-color: transparent;
-      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
     }
-    .work:hover{transform: translateY(-6px); box-shadow: var(--shadow); border-color: rgba(44,166,164,.45)}
     .thumb{
       height: 190px;
       background:
@@ -464,9 +445,8 @@
       cursor:pointer;
       user-select:none;
       -webkit-tap-highlight-color: transparent;
-      transition: border-color .15s ease, transform .15s ease;
     }
-    .opt:hover{border-color: rgba(44,166,164,.45); transform: translateY(-1px)}
+    .opt:hover{border-color: rgba(44,166,164,.45)}
     .opt b{font-size:13px}
     .opt small{display:block; margin-top:4px; color:var(--muted); font-weight:1000}
     .chk{
@@ -671,7 +651,7 @@
     .reveal{opacity:0; transform: translateY(12px); transition: opacity .55s ease, transform .55s ease}
     .reveal.on{opacity:1; transform: translateY(0)}
 
-    /* Mobile */
+    /* Mobile improvements */
     @media (max-width: 980px){
       .heroGrid{grid-template-columns:1fr}
       .dashBody{grid-template-columns:1fr}
@@ -681,10 +661,12 @@
       .ai{grid-template-columns:1fr}
       .slide{grid-template-columns:1fr}
       .contact{grid-template-columns:1fr}
-      .stage{min-height:380px}
+      .stage{min-height:360px}
       .lead{font-size:17px}
       section{padding: 34px 0}
     }
+
+    /* Fullscreen modal on mobile */
     @media (max-width: 720px){
       .overlay{padding: 10px}
       .modal{
@@ -699,7 +681,7 @@
       .metricGrid{grid-template-columns:1fr}
     }
 
-    /* Bottom sticky CTA */
+    /* Bottom sticky CTA (mobile) */
     .bottomCta{
       position:fixed;
       left: 12px; right: 12px;
@@ -722,6 +704,7 @@
       body{padding-bottom: calc(78px + var(--safeB))}
     }
 
+    /* Reduce motion */
     @media (prefers-reduced-motion: reduce){
       *{animation:none !important; transition:none !important}
       html{scroll-behavior:auto}
@@ -750,7 +733,7 @@
       <a href="#reviews" data-close>Anmeldelser</a>
       <a href="#kontakt" data-close>Kontakt</a>
       <div style="height:12px"></div>
-      <button class="btn btnPrimary btnWide" id="openBriefDrawer">Start med AI-brief</button>
+      <button class="btn btnPrimary btnWide" id="openBrief2">Start med AI-brief</button>
     </div>
   </div>
 
@@ -777,7 +760,7 @@
           <div id="caseResult" style="margin-top:8px; color:var(--muted); font-weight:1000; line-height:1.5"></div>
           <div class="metricGrid" id="caseMetrics"></div>
           <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap">
-            <button class="btn btnPrimary btnSmall" id="caseToAI">Lag noe lignende</button>
+            <button class="btn btnPrimary btnSmall" id="caseToBrief">Lag noe lignende</button>
             <button class="btn btnSmall" id="caseToKontakt">Få tilbud</button>
           </div>
         </div>
@@ -785,18 +768,20 @@
     </div>
   </div>
 
-  <!-- BRIEF MODAL (ВНИМАНИЕ: мы НЕ создаём новый brief, мы перемещаем существующий блок) -->
+  <!-- AI BRIEF MODAL -->
   <div class="overlay" id="briefOverlay" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-label="AI brief">
       <div class="modalHead">
         <div>
           <h3>AI-brief → MU_CONFIG.json</h3>
-          <small>Fyll ut → få JSON-konfig + preview + bygg HTML.</small>
+          <small>Fyll ut → få JSON-konfig + preview wireframe.</small>
         </div>
         <button class="close" id="closeBrief" aria-label="Close">✕</button>
       </div>
       <div class="modalBody" style="grid-template-columns:1fr">
-        <div class="modalBox" id="briefModalMount"></div>
+        <div class="modalBox">
+          <div id="briefMount"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -821,7 +806,7 @@
         <div class="right">
           <button class="btn btnIcon" id="themeBtn" aria-label="Toggle theme">🌙</button>
           <button class="btn btnIcon burger" id="openDrawer" aria-label="Open menu">☰</button>
-          <button class="btn btnPrimary" id="openBriefTop">Start med AI-brief</button>
+          <button class="btn btnPrimary" id="openBrief">Start med AI-brief</button>
         </div>
       </div>
     </div>
@@ -835,7 +820,7 @@
           <span class="kicker"><span class="kdot"></span> Premium uttrykk • Enkel prosess • Fast pris</span>
           <h1>Nettsider som ser premium ut — og selger.</h1>
           <p class="lead">
-            Vi lager nettsider, SoMe og strategi for små bedrifter i Norge. Tydelig budskap, proft design, og en plan som gir vekst.
+            Vi bygger nettsider, SoMe og strategi for små bedrifter i Norge. Tydelig budskap, proft design, og en plan som gir vekst.
           </p>
           <div class="cta">
             <button class="btn btnPrimary" id="goKontakt">Få tilbud</button>
@@ -873,10 +858,10 @@
               </div>
               <div class="tile">
                 <h3>AI-brief → JSON</h3>
-                <p>10 spørsmål → MU_CONFIG.json + bygg HTML.</p>
+                <p>10 spørsmål → MU_CONFIG.json + wireframe.</p>
                 <div style="margin-top:10px; display:grid; gap:10px">
-                  <button class="btn btnPrimary" id="heroToBrief">Kjør AI-brief</button>
-                  <button class="btn" id="heroToAI">Se i seksjon</button>
+                  <button class="btn btnPrimary" id="openBrief3">Kjør AI-brief</button>
+                  <button class="btn" id="toAISection">Se i seksjon</button>
                 </div>
               </div>
             </div>
@@ -892,7 +877,7 @@
         <div class="head">
           <div>
             <h2 class="reveal">Tjenester</h2>
-            <p class="reveal" style="transition-delay:.06s">Bygget for små bedrifter: raskt, tydelig, proft.</p>
+            <p class="reveal" style="transition-delay:.06s">Alt vi gjør er bygget for små bedrifter: raskt, tydelig, proft.</p>
           </div>
         </div>
 
@@ -910,7 +895,7 @@
             <div class="ic">📣</div>
             <h3>Sosiale medier</h3>
             <p>Profiler, designmaler og innhold som matcher nettsiden.</p>
-            <button class="more" id="toBriefFromServices">Start brief →</button>
+            <button class="more" id="openBrief4">Start brief →</button>
           </article>
 
           <article class="card reveal" data-sheen style="transition-delay:.12s">
@@ -1046,18 +1031,15 @@
         <div class="head">
           <div>
             <h2 class="reveal">AI-brief → MU_CONFIG.json</h2>
-            <p class="reveal" style="transition-delay:.06s">Генерит JSON-конфиг для будущей платформы + preview + сборка HTML.</p>
+            <p class="reveal" style="transition-delay:.06s">Генерит JSON-конфиг для платформы + preview + сборка и экспорт HTML.</p>
           </div>
           <div class="reveal" style="transition-delay:.10s">
-            <button class="btn btnPrimary btnSmall" id="openBriefModal">Åpne i modal</button>
+            <button class="btn btnPrimary btnSmall" id="openBriefInline">Åpne som modal</button>
           </div>
         </div>
 
         <div class="ai">
-          <div class="box reveal">
-            <!-- Единственный brief-блок. Его мы будем перемещать в модал и обратно -->
-            <div id="briefBlock"></div>
-          </div>
+          <div class="box reveal" id="aiLeft"></div>
 
           <div class="box reveal" style="transition-delay:.06s">
             <b style="font-size:14px">MU_CONFIG.json</b>
@@ -1074,7 +1056,7 @@
             <div style="height:12px"></div>
             <div class="preview" id="preview">
               <h4>Preview wireframe</h4>
-              <div style="color:var(--muted); font-weight:1000">Trykk “Generer JSON” først.</div>
+              <div style="color:var(--muted); font-weight:1000">Trykk “Render preview” etter du har generert JSON.</div>
             </div>
 
             <div style="height:12px"></div>
@@ -1172,7 +1154,7 @@
               4) Har du logo/bilder?
             </div>
             <div style="height:12px"></div>
-            <button class="btn btnPrimary btnWide" id="kontaktToBrief">Start med AI-brief</button>
+            <button class="btn btnPrimary btnWide" id="openBrief5">Start med AI-brief</button>
           </div>
 
           <form class="box form reveal" id="form" novalidate style="transition-delay:.06s">
@@ -1213,7 +1195,7 @@
   <!-- Bottom CTA (mobile) -->
   <div class="bottomCta" id="bottomCta" aria-hidden="false">
     <div class="grow">
-      <small><b>Markedsutvikler</b><br/>AI-brief → JSON</small>
+      <small><b>Markedsutvikler</b><br/>Start med AI-brief → JSON</small>
     </div>
     <button class="btn btnPrimary" id="bottomBrief">AI-brief</button>
     <button class="btn" id="bottomKontakt">Kontakt</button>
@@ -1225,7 +1207,7 @@
     // Utils
     const $ = (q, el=document)=> el.querySelector(q);
     const $$ = (q, el=document)=> Array.from(el.querySelectorAll(q));
-    const fmt = (n)=> n.toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ' ');
+    const fmt = (n)=> n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
     const isTouch = matchMedia('(pointer: coarse)').matches;
 
     // Year
@@ -1306,7 +1288,7 @@
     }
 
     // Bottom CTA
-    $("#bottomBrief").addEventListener('click', ()=> openBriefAsModal());
+    $("#bottomBrief").addEventListener('click', ()=> openBriefModal());
     $("#bottomKontakt").addEventListener('click', ()=> $("#kontakt").scrollIntoView({behavior:'smooth'}));
 
     // Quick tour
@@ -1319,7 +1301,7 @@
       pop('WOW tour ✔');
     });
     $("#goKontakt").addEventListener('click', ()=>$("#kontakt").scrollIntoView({behavior:'smooth'}));
-    $("#heroToAI").addEventListener('click', ()=>$("#ai").scrollIntoView({behavior:'smooth'}));
+    $("#toAISection").addEventListener('click', ()=>$("#ai").scrollIntoView({behavior:'smooth'}));
 
     // Portfolio filter
     const filters = $("#filters");
@@ -1388,7 +1370,7 @@
     $("#closeCase").addEventListener('click', closeCaseModal);
     caseOverlay.addEventListener('click',(e)=>{ if(e.target===caseOverlay) closeCaseModal(); });
     works.forEach(w=> w.addEventListener('click', ()=> openCase(w.dataset.case)));
-    $("#caseToAI").addEventListener('click', ()=>{ closeCaseModal(); $("#ai").scrollIntoView({behavior:'smooth'}); pop("Gå til AI"); });
+    $("#caseToBrief").addEventListener('click', ()=>{ closeCaseModal(); openBriefModal(); });
     $("#caseToKontakt").addEventListener('click', ()=>{ closeCaseModal(); $("#kontakt").scrollIntoView({behavior:'smooth'}); });
 
     // Builder
@@ -1474,14 +1456,14 @@
       const name = $("#name").value.trim();
       const email = $("#email").value.trim();
       const msg = $("#msg").value.trim();
-      const ok = name && /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email) && msg.length>8;
+      const ok = name && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && msg.length>8;
       if(!ok){ err.style.display='block'; pop('Sjekk feltene'); return; }
       err.style.display='none';
       form.reset();
       pop('Sendt (demo)');
     });
 
-    // ======= JSON GENERATOR (фикс) =======
+    // ======= REAL CONFIG GENERATOR (JSON) =======
     const briefState = {
       brand:"Markedsutvikler",
       bransje:"",
@@ -1553,7 +1535,7 @@
       return `${br}${loc} — ${s.brand}`;
     }
     function seoDesc(s){
-      const br = s.bransje ? s.bransje : "små bedrifter";
+      const br = s.bransje ? s.bransje : "Små bedrifter";
       const loc = s.by ? s.by : "Norge";
       const cta = ctaText(s.primarCTA);
       return `${s.brand} hjelper med nettsider, SoMe og strategi for ${br} i ${loc}. ${cta} – rask levering og fast pris.`;
@@ -1579,10 +1561,7 @@
           ? {id:"packages", type:"pricing", title:"Pakker", style:"premium", note:"3 pakker med verdi-argumenter", enabled:true}
           : {id:"packages", type:"pricing", title:"Pakker", style:"simple", note:"3 pakker, enkel sammenligning", enabled:true};
 
-      const integrations = (s.integrasjoner || "")
-        .split(",")
-        .map(x=>x.trim())
-        .filter(Boolean);
+      const integrations = s.integrasjoner.split(",").map(x=>x.trim()).filter(Boolean);
 
       const pages = [
         {
@@ -1632,6 +1611,15 @@
         }
       };
 
+      const analytics = {
+        events:[
+          {name:"cta_click", props:["cta_label","section_id"]},
+          {name:"form_submit", props:["source","page"]},
+          {name:"scroll_depth", props:["percent"]}
+        ],
+        pixels: integrations.filter(x=>/pixel|meta|fb/i.test(x))
+      };
+
       return {
         schema:"MU_CONFIG",
         generatedAt: new Date().toISOString(),
@@ -1645,7 +1633,15 @@
           offer:s.tilbud || "",
           pricingLevel:s.prisnivaa
         },
-        theme:{ style:s.stil },
+        theme:{
+          style:s.stil,
+          tokens:{
+            accentA:"--a",
+            accentB:"--b",
+            background:"--bg",
+            text:"--ink"
+          }
+        },
         cta:{
           primary: {label: cta, action:"open_contact"},
           secondary:{label:"Se priser", action:"scroll_packages"}
@@ -1659,7 +1655,8 @@
           notes:"Real integrations handled by platform connectors. No keys in config."
         },
         pages,
-        platform
+        platform,
+        analytics
       };
     }
 
@@ -1683,25 +1680,24 @@
       `;
     }
 
-    // Brief UI renderer (один единственный инстанс)
+    // Brief UI renderer
     function renderBrief(mountEl){
       let step = 0;
-
       mountEl.innerHTML = `
-        <b style="font-size:14px">Spørsmål <span data-stepN>1</span>/10</b>
-        <div class="steps" data-dots></div>
+        <b style="font-size:14px">Spørsmål <span id="stepN">1</span>/10</b>
+        <div class="steps" id="dots"></div>
 
         <div style="margin-top:12px">
-          <div class="qTitle" data-qTitle></div>
-          <p class="qHelp" data-qHelp></p>
+          <div class="qTitle" id="qTitle"></div>
+          <p class="qHelp" id="qHelp"></p>
 
-          <div class="qControls" data-qCtrl></div>
+          <div class="qControls" id="qCtrl"></div>
 
           <div class="qRow">
-            <button class="btn btnSmall" data-prev>Tilbake</button>
-            <button class="btn btnPrimary btnSmall" data-next>Neste</button>
-            <button class="btn btnPrimary btnSmall" data-gen>Generer JSON</button>
-            <button class="btn btnSmall" data-reset>Reset</button>
+            <button class="btn btnSmall" id="prevQ">Tilbake</button>
+            <button class="btn btnPrimary btnSmall" id="nextQ">Neste</button>
+            <button class="btn btnPrimary btnSmall" id="finishQ">Generer JSON</button>
+            <button class="btn btnSmall" id="resetQ">Reset</button>
           </div>
 
           <div style="height:12px"></div>
@@ -1711,16 +1707,15 @@
         </div>
       `;
 
-      // scoped selects (НЕ id!)
-      const dots  = mountEl.querySelector('[data-dots]');
-      const stepN = mountEl.querySelector('[data-stepN]');
-      const qTitle= mountEl.querySelector('[data-qTitle]');
-      const qHelp = mountEl.querySelector('[data-qHelp]');
-      const qCtrl = mountEl.querySelector('[data-qCtrl]');
-      const prevQ = mountEl.querySelector('[data-prev]');
-      const nextQ = mountEl.querySelector('[data-next]');
-      const genQ  = mountEl.querySelector('[data-gen]');
-      const resetQ= mountEl.querySelector('[data-reset]');
+      const dots = $("#dots", mountEl);
+      const stepN = $("#stepN", mountEl);
+      const qTitle = $("#qTitle", mountEl);
+      const qHelp  = $("#qHelp", mountEl);
+      const qCtrl  = $("#qCtrl", mountEl);
+      const prevQ  = $("#prevQ", mountEl);
+      const nextQ  = $("#nextQ", mountEl);
+      const finishQ= $("#finishQ", mountEl);
+      const resetQ = $("#resetQ", mountEl);
 
       function paintDots(){
         dots.innerHTML = steps.map((_,i)=> `<span class="stepDot ${i<=step ? 'on':''}"></span>`).join('');
@@ -1733,17 +1728,17 @@
         qHelp.textContent = s.help;
 
         if(s.type==="text"){
-          qCtrl.innerHTML = `<input data-inp placeholder="${s.ph||''}" value="${briefState[s.key]||''}">`;
-          qCtrl.querySelector('[data-inp]').addEventListener('input',(e)=> briefState[s.key]=e.target.value);
+          qCtrl.innerHTML = `<input id="inp" placeholder="${s.ph||''}" value="${briefState[s.key]||''}">`;
+          $("#inp", qCtrl).addEventListener('input',(e)=> briefState[s.key]=e.target.value);
         } else if(s.type==="textarea"){
-          qCtrl.innerHTML = `<textarea data-ta placeholder="${s.ph||''}">${briefState[s.key]||''}</textarea>`;
-          qCtrl.querySelector('[data-ta]').addEventListener('input',(e)=> briefState[s.key]=e.target.value);
+          qCtrl.innerHTML = `<textarea id="ta" placeholder="${s.ph||''}">${briefState[s.key]||''}</textarea>`;
+          $("#ta", qCtrl).addEventListener('input',(e)=> briefState[s.key]=e.target.value);
         } else {
           qCtrl.innerHTML = `
-            <select data-sel>
+            <select id="sel">
               ${s.options.map(o=>`<option value="${o.v}" ${briefState[s.key]===o.v?'selected':''}>${o.t}</option>`).join('')}
             </select>`;
-          qCtrl.querySelector('[data-sel]').addEventListener('change',(e)=> briefState[s.key]=e.target.value);
+          $("#sel", qCtrl).addEventListener('change',(e)=> briefState[s.key]=e.target.value);
         }
 
         prevQ.disabled = step===0;
@@ -1754,44 +1749,39 @@
       prevQ.addEventListener('click', ()=>{ if(step>0){ step--; paint(); } });
       nextQ.addEventListener('click', ()=>{ if(step<steps.length-1){ step++; paint(); } });
 
-      genQ.addEventListener('click', ()=>{
+      finishQ.addEventListener('click', ()=>{
         const cfg = buildConfig(briefState);
         const json = JSON.stringify(cfg, null, 2);
         $("#aiOut").textContent = json;
-        renderPreviewFromConfig(cfg);
         pop('JSON klar ✔');
+        renderPreviewFromConfig(cfg);
       });
 
       resetQ.addEventListener('click', ()=>{
-        // restore defaults
+        Object.keys(briefState).forEach(k=> briefState[k]="");
         briefState.brand="Markedsutvikler";
-        briefState.bransje="";
-        briefState.by="";
         briefState.maal="leads";
         briefState.stil="premium";
-        briefState.tilbud="";
         briefState.prisnivaa="middels";
         briefState.primarCTA="booking";
         briefState.tone="tydelig";
         briefState.innhold="bilder+priser";
         briefState.integrasjoner="Google Reviews";
         briefState.språk="no";
-        briefState.ekstra="";
         step=0;
         paint();
         $("#aiOut").textContent = "Fyll ut briefen til venstre. Output vises her.";
-        $("#preview").innerHTML = `<h4>Preview wireframe</h4><div style="color:var(--muted); font-weight:1000">Trykk “Generer JSON” først.</div>`;
+        $("#preview").innerHTML = `<h4>Preview wireframe</h4><div style="color:var(--muted); font-weight:1000">Trykk “Render preview” etter du har generert JSON.</div>`;
         $("#builtSite").innerHTML = "";
         window.__BUILT_HTML__ = "";
-        pop('Reset ✔');
+        pop('Reset brief');
       });
 
       paint();
     }
 
-    // mount single brief block
-    const briefBlock = $("#briefBlock");
-    renderBrief(briefBlock);
+    // Mount brief in section
+    renderBrief($("#aiLeft"));
 
     // Copy JSON
     $("#copyOut").addEventListener('click', async ()=>{
@@ -1828,7 +1818,7 @@
       try{
         const cfg = JSON.parse(txt);
         renderPreviewFromConfig(cfg);
-        pop("Preview ✔");
+        pop("Preview render ✔");
       }catch{
         pop("JSON feil (kan ikke parse)");
       }
@@ -1854,64 +1844,43 @@
       pop("Sendt til brief");
     });
 
-    // ===== Brief modal that MOVES the same brief block =====
+    // Brief modal
     const briefOverlay = $("#briefOverlay");
-    const briefModalMount = $("#briefModalMount");
-    let briefHomeParent = briefBlock.parentElement; // original container (box)
-    let briefHomeNext = briefBlock.nextSibling;
+    const mount = $("#briefMount");
+    let mountedOnce = false;
 
-    function openBriefAsModal(){
-      // remember position in original container
-      briefHomeParent = briefBlock.parentElement;
-      briefHomeNext = briefBlock.nextSibling;
-
-      // move into modal
-      briefModalMount.appendChild(briefBlock);
-
+    function openBriefModal(){
       briefOverlay.classList.add('open');
       briefOverlay.setAttribute('aria-hidden','false');
       document.body.style.overflow='hidden';
-      pop("AI-brief (modal)");
+      if(!mountedOnce){
+        renderBrief(mount);
+        mountedOnce = true;
+      }
+      pop("AI-brief åpnet");
     }
     function closeBriefModal(){
-      // move back
-      if(briefHomeNext) briefHomeParent.insertBefore(briefBlock, briefHomeNext);
-      else briefHomeParent.appendChild(briefBlock);
-
       briefOverlay.classList.remove('open');
       briefOverlay.setAttribute('aria-hidden','true');
       document.body.style.overflow='';
-      pop("Lukket");
     }
-
-    $("#openBriefModal").addEventListener('click', openBriefAsModal);
     $("#closeBrief").addEventListener('click', closeBriefModal);
     briefOverlay.addEventListener('click',(e)=>{ if(e.target===briefOverlay) closeBriefModal(); });
 
-    // entry points to brief
-    $("#openBriefTop").addEventListener('click', ()=>{ $("#ai").scrollIntoView({behavior:'smooth'}); pop("AI"); });
-    $("#heroToBrief").addEventListener('click', ()=>{ $("#ai").scrollIntoView({behavior:'smooth'}); pop("AI"); });
-    $("#toBriefFromServices").addEventListener('click', ()=>{ $("#ai").scrollIntoView({behavior:'smooth'}); pop("AI"); });
-    $("#kontaktToBrief").addEventListener('click', ()=>{ $("#ai").scrollIntoView({behavior:'smooth'}); pop("AI"); });
-    $("#openBriefDrawer").addEventListener('click', ()=>{ $("#closeDrawer").click(); $("#ai").scrollIntoView({behavior:'smooth'}); });
+    $("#openBrief").addEventListener('click', openBriefModal);
+    $("#openBrief2").addEventListener('click', ()=>{ $("#closeDrawer").click(); openBriefModal(); });
+    $("#openBrief3").addEventListener('click', openBriefModal);
+    $("#openBrief4").addEventListener('click', openBriefModal);
+    $("#openBrief5").addEventListener('click', openBriefModal);
+    $("#openBriefInline").addEventListener('click', openBriefModal);
 
-    // ESC for overlays
+    // ESC for modals
     window.addEventListener('keydown',(e)=>{
       if(e.key==="Escape"){
         if(caseOverlay.classList.contains('open')) closeCaseModal();
         if(briefOverlay.classList.contains('open')) closeBriefModal();
       }
     });
-
-    // AI section jump
-    $("#heroToAI").addEventListener('click', ()=> $("#ai").scrollIntoView({behavior:'smooth'}));
-
-    // Drawer "Start brief"
-    $("#openBriefDrawer").addEventListener('click', ()=>{ $("#ai").scrollIntoView({behavior:'smooth'}); });
-
-    // Bottom CTA
-    $("#bottomBrief").addEventListener('click', ()=>{ $("#ai").scrollIntoView({behavior:'smooth'}); });
-    $("#bottomKontakt").addEventListener('click', ()=>{ $("#kontakt").scrollIntoView({behavior:'smooth'}); });
 
     // ===== Build Site from MU_CONFIG.json (safe) =====
     function esc(s=""){ return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
@@ -2084,7 +2053,7 @@
       const home = (cfg.pages || []).find(p=>p.slug==="/");
       const title = home?.seo?.title || (cfg.brand?.name || "Website");
       const desc  = home?.seo?.description || "";
-      const sections = (home?.sections || []).filter(s=>s.enabled).map(s=>sectionHTML(s, cfg)).join("\\n");
+      const sections = (home?.sections || []).filter(s=>s.enabled).map(s=>sectionHTML(s, cfg)).join("\n");
 
       const css = `
       :root{
@@ -2142,23 +2111,23 @@
         </header>
       `;
 
-      return \`<!doctype html>
+      return `<!doctype html>
 <html lang="no">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>\${esc(title)}</title>
-<meta name="description" content="\${esc(desc)}"/>
-<style>\${css}</style>
+<title>${esc(title)}</title>
+<meta name="description" content="${esc(desc)}"/>
+<style>${css}</style>
 </head>
 <body>
-\${nav}
+${nav}
 <main class="wrap">
-\${sections}
+${sections}
 </main>
-<footer><div class="wrap">© \${new Date().getFullYear()} \${esc(cfg.brand?.name || "Brand")}</div></footer>
+<footer><div class="wrap">© ${new Date().getFullYear()} ${esc(cfg.brand?.name || "Brand")}</div></footer>
 </body>
-</html>\`;
+</html>`;
     }
 
     function buildSiteIntoPage(){
@@ -2177,7 +2146,8 @@
           style="width:100%; height:620px; border:1px solid var(--stroke); border-radius:18px; background:var(--panel);"
         ></iframe>
       `;
-      host.querySelector("iframe").srcdoc = html;
+      const frame = host.querySelector("iframe");
+      frame.srcdoc = html;
 
       window.__BUILT_HTML__ = html;
       pop("Built site ✔");
@@ -2198,13 +2168,8 @@
       pop("Lastet ned site-built.html");
     }
 
-    $("#buildSite").addEventListener("click", buildSiteIntoPage);
-    $("#downloadBuilt").addEventListener("click", downloadBuiltHTML);
-
-    // Extra routing buttons
-    $("#goKontakt").addEventListener('click', ()=>$("#kontakt").scrollIntoView({behavior:'smooth'}));
-    $("#kontaktToBrief").addEventListener('click', ()=>$("#ai").scrollIntoView({behavior:'smooth'}));
-    $("#toBriefFromServices").addEventListener('click', ()=>$("#ai").scrollIntoView({behavior:'smooth'}));
+    $("#buildSite")?.addEventListener("click", buildSiteIntoPage);
+    $("#downloadBuilt")?.addEventListener("click", downloadBuiltHTML);
   </script>
 </body>
 </html>
