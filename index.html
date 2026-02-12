@@ -1,716 +1,302 @@
-<!doctype html>
-<html lang="no">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#0B2A3C" />
+// ===== MU core additions =====
+const $ = (q, el=document)=> el.querySelector(q);
+const $$ = (q, el=document)=> Array.from(el.querySelectorAll(q));
+const fmt = (n)=> n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 
-  <title>Markedsutvikler – Nettsider, synlighet og SoMe for små bedrifter</title>
-  <meta name="description" content="Markedsutvikler lager profesjonelle, raske og brukervennlige nettsider – med synlighet (SEO) og sosiale medier. Launch-program: 5 pilotprosjekter." />
+// Theme (persist)
+const themeBtn = $("#themeBtn");
+if(themeBtn){
+  const saved = localStorage.getItem("mu_theme");
+  if(saved) document.documentElement.setAttribute("data-theme", saved);
+  const updateIcon = ()=>{
+    const dark = document.documentElement.getAttribute("data-theme")==="dark";
+    themeBtn.textContent = dark ? "☀️" : "🌙";
+  };
+  updateIcon();
+  themeBtn.addEventListener("click", ()=>{
+    const dark = document.documentElement.getAttribute("data-theme")==="dark";
+    const next = dark ? "" : "dark";
+    if(next) document.documentElement.setAttribute("data-theme", next);
+    else document.documentElement.removeAttribute("data-theme");
+    localStorage.setItem("mu_theme", next);
+    updateIcon();
+  });
+}
 
-  <!-- Open Graph -->
-  <meta property="og:title" content="Markedsutvikler" />
-  <meta property="og:description" content="Nettsider • Synlighet • Sosiale medier. Profesjonell start for små bedrifter." />
-  <meta property="og:type" content="website" />
-  <meta property="og:locale" content="nb_NO" />
-  <!-- Set these when you have domain/assets -->
-  <meta property="og:url" content="https://example.no/" />
-  <meta property="og:image" content="https://example.no/og.jpg" />
+// Drawer
+const drawer = $("#drawer");
+const openDrawer = $("#openDrawer");
+const closeDrawer = $("#closeDrawer");
+if(drawer && openDrawer && closeDrawer){
+  openDrawer.addEventListener("click", ()=>{ drawer.classList.add("open"); drawer.setAttribute("aria-hidden","false"); });
+  closeDrawer.addEventListener("click", ()=>{ drawer.classList.remove("open"); drawer.setAttribute("aria-hidden","true"); });
+  drawer.addEventListener("click", (e)=>{ if(e.target===drawer) closeDrawer.click(); });
+  drawer.querySelectorAll("[data-close]").forEach(a=> a.addEventListener("click", ()=> closeDrawer.click()));
+}
 
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image" />
+// Bottom CTA
+const bottomBrief = $("#bottomBrief");
+const bottomKontakt = $("#bottomKontakt");
+if(bottomBrief) bottomBrief.addEventListener("click", ()=> $("#ai")?.scrollIntoView({behavior:"smooth"}));
+if(bottomKontakt) bottomKontakt.addEventListener("click", ()=> $("#kontakt")?.scrollIntoView({behavior:"smooth"}));
 
-  <!-- Favicons (optional) -->
-  <link rel="icon" href="/favicon.ico" />
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-
-  <!-- Basic SEO -->
-  <meta name="robots" content="index,follow" />
-  <link rel="canonical" href="https://example.no/" />
-
-  <!-- JSON-LD (edit later: address, phone, url, sameAs) -->
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
-    "@type":"ProfessionalService",
-    "name":"Markedsutvikler",
-    "url":"https://example.no/",
-    "areaServed":[{"@type":"AdministrativeArea","name":"Østfold"}],
-    "serviceType":["Nettsider","Søkemotoroptimalisering (SEO)","Sosiale medier"],
-    "brand":{"@type":"Brand","name":"Markedsutvikler"}
+// ===== Case modal (готово под будущие реальные кейсы) =====
+const CASES = {
+  case1:{
+    title:"Pilot — Nettside",
+    subtitle:"Nettside • Struktur • Demo",
+    task:"Tydelig tilbud + CTA.",
+    solution:"Hero + tjenester + priser + kontakt.",
+    result:"Mer fokus og flere henvendelser (demo).",
+    metrics:[{v:"<2s",t:"ytelse (mål)"},{v:"7",t:"dager (mål)"},{v:"+",t:"leads (mål)"}]
   }
-  </script>
+};
+const caseOverlay = $("#caseOverlay");
+const closeCase = $("#closeCase");
+function openCase(key){
+  const c = CASES[key]; if(!c) return;
+  $("#caseTitle").textContent = c.title;
+  $("#caseSubtitle").textContent = c.subtitle;
+  $("#caseTask").textContent = c.task;
+  $("#caseSolution").textContent = c.solution;
+  $("#caseResult").textContent = c.result;
+  $("#caseMetrics").innerHTML = c.metrics.map(m=>`<div class="metric"><b>${m.v}</b><span>${m.t}</span></div>`).join("");
+  caseOverlay.classList.add("open");
+  caseOverlay.setAttribute("aria-hidden","false");
+  document.body.style.overflow="hidden";
+}
+function closeCaseModal(){
+  caseOverlay.classList.remove("open");
+  caseOverlay.setAttribute("aria-hidden","true");
+  document.body.style.overflow="";
+}
+if(closeCase) closeCase.addEventListener("click", closeCaseModal);
+if(caseOverlay) caseOverlay.addEventListener("click",(e)=>{ if(e.target===caseOverlay) closeCaseModal(); });
+window.addEventListener("keydown",(e)=>{ if(e.key==="Escape" && caseOverlay?.classList.contains("open")) closeCaseModal(); });
 
-  <style>
-    :root{
-      --navy:#0B2A3C;
-      --navy2:#0F3A52;
-      --teal:#2BB3B8;
-      --teal2:#6FE6E5;
-
-      --bg:#F6F8FB;
-      --card:rgba(255,255,255,.72);
-      --card2:rgba(255,255,255,.50);
-      --line:rgba(15,23,42,.10);
-
-      --ink:rgba(11,42,60,.95);
-      --muted:rgba(71,85,105,.92);
-
-      --shadow:0 18px 50px rgba(2,12,27,.10);
-      --shadow2:0 10px 30px rgba(2,12,27,.08);
-
-      --r:22px;
-      --r2:16px;
-      --max:1120px;
-
-      --ease:cubic-bezier(.2,.8,.2,1);
+// ===== Builder =====
+const opts = $$("#options .opt");
+const totalEl = $("#total");
+const chosenEl = $("#chosen");
+function recalc(){
+  let sum=0, names=[];
+  opts.forEach(o=>{
+    if(o.classList.contains("on")){
+      sum += Number(o.dataset.price);
+      names.push("• " + o.dataset.name);
     }
+  });
+  if(totalEl) totalEl.textContent = fmt(sum);
+  if(chosenEl) chosenEl.innerHTML = names.join("<br/>") || "• (ingen valg)";
+}
+opts.forEach((o,i)=>{
+  o.addEventListener("click", ()=>{
+    if(i===0) return; // base always on
+    o.classList.toggle("on");
+    recalc();
+  });
+});
+recalc();
+$("#reset")?.addEventListener("click", ()=>{
+  opts.forEach((o,i)=> o.classList.toggle("on", i===0));
+  recalc();
+});
 
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      color:var(--ink);
-      background:
-        radial-gradient(900px 600px at 20% 0%, rgba(111,230,229,.18), transparent 60%),
-        radial-gradient(900px 650px at 85% 10%, rgba(43,179,184,.14), transparent 60%),
-        radial-gradient(900px 650px at 50% 95%, rgba(11,42,60,.10), transparent 60%),
-        var(--bg);
-      overflow-x:hidden;
-    }
+// ===== AI brief → JSON =====
+const briefState = {
+  brand:"Markedsutvikler",
+  bransje:"",
+  by:"",
+  maal:"leads",
+  stil:"premium",
+  tilbud:"",
+  prisnivaa:"middels",
+  primarCTA:"quote",
+  tone:"tydelig",
+  innhold:"case+reviews",
+  integrasjoner:"Google Reviews",
+  språk:"no"
+};
 
-    a{color:inherit;text-decoration:none}
-    img{max-width:100%;display:block}
-    .container{max-width:var(--max);margin:0 auto;padding:0 20px}
+const steps = [
+  {key:"bransje", label:"Bransje", help:"Hva slags bedrift?", type:"text", ph:"f.eks. frisør / bilpleie"},
+  {key:"by", label:"By/område", help:"For lokal SEO", type:"text", ph:"f.eks. Halden / Østfold"},
+  {key:"maal", label:"Mål", help:"Hva er #1 mål?", type:"select", options:[
+    {v:"leads", t:"flere henvendelser"},{v:"booking", t:"flere bookinger"},{v:"sales", t:"flere salg"},{v:"trust", t:"mer tillit"}
+  ]},
+  {key:"stil", label:"Stil", help:"Hvordan skal det føles?", type:"select", options:[
+    {v:"premium", t:"premium"},{v:"clean", t:"clean"},{v:"tech", t:"tech"},{v:"warm", t:"varm"}
+  ]},
+  {key:"tilbud", label:"Tilbud", help:"Hva selger du? (kort)", type:"textarea", ph:"f.eks. nettside + SoMe"},
+  {key:"prisnivaa", label:"Prisnivå", help:"Lav/middels/høy", type:"select", options:[
+    {v:"lavt", t:"lavt"},{v:"middels", t:"middels"},{v:"høyt", t:"høyt"}
+  ]},
+  {key:"primarCTA", label:"CTA", help:"Hva skal brukeren gjøre?", type:"select", options:[
+    {v:"quote", t:"Få tilbud"},{v:"booking", t:"Bestill"},{v:"call", t:"Ring"},{v:"visit", t:"Finn oss"}
+  ]},
+  {key:"tone", label:"Tone", help:"Hvordan skal teksten være?", type:"select", options:[
+    {v:"tydelig", t:"tydelig"},{v:"vennlig", t:"vennlig"},{v:"direkte", t:"direkte"},{v:"eksklusiv", t:"eksklusiv"}
+  ]},
+  {key:"innhold", label:"Fokus", help:"Hva vil du vise mest?", type:"select", options:[
+    {v:"bilder+priser", t:"bilder + priser"},{v:"før-etter", t:"før/etter"},{v:"case+reviews", t:"case + anmeldelser"},{v:"tjenester+faq", t:"tjenester + FAQ"}
+  ]},
+  {key:"integrasjoner", label:"Integrasjoner", help:"Kun navn, uten keys", type:"text", ph:"f.eks. Vipps, Booking, Meta Pixel"}
+];
 
-    /* App shell like your best mock */
-    .shell{
-      margin:22px auto 46px;
-      padding:0 20px;
-      max-width:calc(var(--max) + 40px);
-    }
-    .frame{
-      border-radius:30px;
-      overflow:hidden;
-      background:linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.70));
-      border:1px solid rgba(255,255,255,.60);
-      box-shadow:var(--shadow);
-      position:relative;
-    }
+function ctaText(cta){
+  if(cta==="booking") return "Bestill";
+  if(cta==="call") return "Ring oss";
+  if(cta==="visit") return "Finn oss";
+  return "Få tilbud";
+}
 
-    /* NAV */
-    .nav{
-      position:sticky; top:0; z-index:50;
-      backdrop-filter: blur(12px);
-      background:linear-gradient(180deg, rgba(255,255,255,.86), rgba(255,255,255,.58));
-      border-bottom:1px solid rgba(15,23,42,.06);
-    }
-    .nav-inner{
-      display:flex; align-items:center; justify-content:space-between; gap:16px;
-      padding:16px 20px;
-      max-width:var(--max); margin:0 auto;
-    }
-    .brand{display:flex; align-items:center; gap:12px; min-width:220px}
-    .brand strong{
-      font-weight:900; letter-spacing:.12em;
-      text-transform:uppercase;
-      font-size:13px;
-      color:rgba(11,42,60,.92);
-      white-space:nowrap;
-    }
-    .logo{width:40px;height:40px;flex:0 0 auto;filter:drop-shadow(0 10px 20px rgba(2,12,27,.10))}
-    .menu{display:flex; gap:16px; align-items:center; color:rgba(15,23,42,.72); font-weight:700}
-    .menu a{padding:8px 10px;border-radius:12px}
-    .menu a:hover{background:rgba(15,23,42,.04)}
-    .btn{
-      display:inline-flex; align-items:center; justify-content:center;
-      border:0; cursor:pointer;
-      padding:12px 16px;
-      border-radius:999px;
-      font-weight:900;
-      letter-spacing:.01em;
-      transition:transform .15s var(--ease), box-shadow .15s var(--ease), opacity .15s var(--ease);
-      user-select:none;
-      white-space:nowrap;
-    }
-    .btn-primary{
-      color:#fff;
-      background:linear-gradient(135deg, var(--navy), var(--teal));
-      box-shadow:0 14px 30px rgba(11,42,60,.18);
-    }
-    .btn-primary:hover{transform:translateY(-1px)}
-    .btn-ghost{
-      background:rgba(255,255,255,.62);
-      border:1px solid rgba(15,23,42,.10);
-      color:rgba(15,23,42,.86);
-      box-shadow:var(--shadow2);
-    }
-    .btn-ghost:hover{transform:translateY(-1px)}
-    .link{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:10px 6px;
-      border-radius:12px;
-      color:rgba(15,23,42,.72);
-      font-weight:800;
-    }
-    .link:hover{color:rgba(15,23,42,.92)}
+function buildConfig(s){
+  const integrations = (s.integrasjoner||"").split(",").map(x=>x.trim()).filter(Boolean);
+  return {
+    schema:"MU_CONFIG",
+    generatedAt:new Date().toISOString(),
+    brand:{
+      name:s.brand, industry:s.bransje||"general", location:s.by||"Norway", language:s.språk,
+      tone:s.tone, goals:[s.maal], offer:s.tilbud||"", pricingLevel:s.prisnivaa
+    },
+    theme:{style:s.stil},
+    cta:{primary:{label:ctaText(s.primarCTA), action:"open_contact"}},
+    integrations:{requested: integrations.length ? integrations : ["Google Reviews"]},
+    pages:[{
+      slug:"/",
+      name:"Home",
+      sections:[
+        {id:"hero", type:"hero", title:"Profesjonell start", enabled:true},
+        {id:"services", type:"services", title:"Tjenester", enabled:true},
+        {id:"packages", type:"pricing", title:"Pakker", enabled:true},
+        {id:"proof", type:"social_proof", title:"Bevis", enabled:true},
+        {id:"contact", type:"contact", title:"Kontakt", enabled:true}
+      ]
+    }]
+  };
+}
 
-    /* HERO */
-    .hero{
-      position:relative;
-      padding:44px 20px 26px;
-      background:
-        /* tame photo (optional) */
-        linear-gradient(180deg, rgba(255,255,255,.88), rgba(255,255,255,.78)),
-        radial-gradient(900px 600px at 15% 20%, rgba(255,255,255,.60), transparent 62%),
-        radial-gradient(900px 650px at 80% 25%, rgba(111,230,229,.18), transparent 62%);
-      overflow:hidden;
-    }
-
-    /* Optional background photo: set hero-bg.jpg in /assets */
-    .hero::before{
-      content:"";
-      position:absolute; inset:0;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,.82), rgba(255,255,255,.74)),
-        url("assets/hero-bg.jpg") center/cover no-repeat;
-      opacity:.55; /* tame */
-      filter:saturate(.95) contrast(.98);
-      transform:scale(1.02);
-      pointer-events:none;
-    }
-
-    .hero-inner{
-      position:relative; z-index:2;
-      max-width:var(--max); margin:0 auto;
-      display:grid;
-      grid-template-columns: 1.05fr .95fr;
-      gap:26px;
-      align-items:start;
-    }
-    .kicker{
-      display:inline-flex; align-items:center; gap:10px;
-      padding:8px 12px;
-      border-radius:999px;
-      background:rgba(255,255,255,.62);
-      border:1px solid rgba(15,23,42,.08);
-      color:rgba(11,42,60,.86);
-      font-weight:900;
-      width:fit-content;
-    }
-    .dot{width:8px;height:8px;border-radius:99px;background:linear-gradient(135deg,var(--teal2),var(--teal))}
-    h1{
-      margin:14px 0 10px;
-      font-size:clamp(36px, 3.6vw, 58px);
-      line-height:1.05;
-      letter-spacing:-.03em;
-      color:rgba(11,42,60,.96);
-    }
-    .lead{
-      margin:0 0 18px;
-      font-size:18px;
-      line-height:1.55;
-      color:var(--muted);
-      max-width:58ch;
-    }
-    .chips{
-      display:flex; flex-wrap:wrap; gap:10px;
-      margin:0 0 18px;
-    }
-    .chip{
-      padding:8px 12px;
-      border-radius:999px;
-      background:rgba(255,255,255,.60);
-      border:1px solid rgba(15,23,42,.08);
-      font-weight:900;
-      color:rgba(15,23,42,.75);
-      font-size:13px;
-    }
-    .actions{display:flex; gap:12px; flex-wrap:wrap; align-items:center}
-
-    /* Visual (spiral + devices), spiral not “main” */
-    .visual{
-      position:relative;
-      min-height:340px;
-      border-radius:var(--r);
-      background:linear-gradient(180deg, rgba(255,255,255,.58), rgba(255,255,255,.24));
-      border:1px solid rgba(255,255,255,.62);
-      box-shadow:var(--shadow2);
-      overflow:hidden;
-    }
-
-    .spiral{
-      position:absolute; inset:-40px -90px -80px -60px;
-      opacity:.72; /* tame */
-      pointer-events:none;
-      animation:drift 18s var(--ease) infinite;
-    }
-    @keyframes drift{
-      0%,100%{transform:translate3d(0,0,0) rotate(0deg) scale(1)}
-      50%{transform:translate3d(-6px,8px,0) rotate(2deg) scale(1.01)}
-    }
-
-    .spiral svg{width:100%;height:100%}
-    .devices{
-      position:absolute;
-      right:-30px; bottom:-36px;
-      width:min(520px, 92%);
-      aspect-ratio: 16/10;
-      transform: rotate(-6deg);
-      filter: drop-shadow(0 30px 50px rgba(2,12,27,.16));
-    }
-    .laptop{
-      position:absolute; inset:0;
-      border-radius:26px;
-      background:linear-gradient(180deg, rgba(255,255,255,.90), rgba(255,255,255,.60));
-      border:1px solid rgba(15,23,42,.10);
-      overflow:hidden;
-    }
-    .laptop::before{
-      content:"";
-      position:absolute; left:16px; right:16px; top:16px;
-      height:16px; border-radius:999px;
-      background:rgba(15,23,42,.06);
-    }
-    .laptop .screen{
-      position:absolute; left:16px; right:16px; top:44px; bottom:18px;
-      border-radius:18px;
-      background:
-        radial-gradient(240px 160px at 20% 25%, rgba(111,230,229,.26), transparent 65%),
-        radial-gradient(260px 160px at 70% 35%, rgba(43,179,184,.16), transparent 65%),
-        linear-gradient(180deg, rgba(11,42,60,.10), rgba(255,255,255,.86));
-      border:1px solid rgba(15,23,42,.07);
-    }
-    .laptop .screen .row{position:absolute;left:18px;right:18px;top:18px;height:14px;border-radius:10px;background:rgba(15,23,42,.08)}
-    .laptop .screen .card{position:absolute;left:18px;right:18px;top:50px;height:90px;border-radius:18px;background:rgba(255,255,255,.56);border:1px solid rgba(15,23,42,.08)}
-    .laptop .screen .chart{position:absolute;left:18px;right:18px;bottom:18px;height:90px;border-radius:18px;background:rgba(255,255,255,.56);border:1px solid rgba(15,23,42,.08)}
-
-    /* Launch */
-    .launch{
-      margin-top:18px;
-      max-width:560px;
-      border-radius:var(--r);
-      padding:18px 18px 16px;
-      background:linear-gradient(180deg, rgba(255,255,255,.72), rgba(255,255,255,.46));
-      border:1px solid rgba(255,255,255,.64);
-      box-shadow:var(--shadow2);
-      backdrop-filter: blur(12px);
-    }
-    .launch h3{
-      margin:0 0 8px;
-      font-size:18px;
-      letter-spacing:-.01em;
-      color:rgba(11,42,60,.92);
-      display:flex; align-items:center; gap:10px;
-    }
-    .launch ul{margin:0; padding:0 0 0 18px; color:var(--muted); font-weight:800; line-height:1.85}
-    .note{font-size:12px;color:rgba(71,85,105,.74);font-weight:800}
-
-    /* Sections */
-    .section{padding:26px 20px; max-width:var(--max); margin:0 auto}
-    .section h2{
-      margin:0 0 14px;
-      font-size:clamp(24px, 2.2vw, 34px);
-      letter-spacing:-.02em;
-      text-align:center;
-      color:rgba(11,42,60,.92);
-    }
-
-    .grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
-    .card{
-      border-radius:var(--r2);
-      background:linear-gradient(180deg, var(--card), var(--card2));
-      border:1px solid rgba(255,255,255,.64);
-      box-shadow:0 12px 38px rgba(2,12,27,.08);
-      padding:16px;
-      position:relative;
-      overflow:hidden;
-      min-height:120px;
-    }
-    .card::after{
-      content:"";
-      position:absolute; inset:-70px -90px auto auto;
-      width:200px;height:200px;
-      background:radial-gradient(circle at 40% 40%, rgba(111,230,229,.22), transparent 60%);
-      pointer-events:none;
-    }
-    .icon{
-      width:36px;height:36px;border-radius:12px;
-      background:rgba(43,179,184,.14);
-      border:1px solid rgba(43,179,184,.22);
-      display:flex; align-items:center; justify-content:center;
-      font-weight:900;
-      color:rgba(11,42,60,.90);
-      margin-bottom:10px;
-    }
-    .card h3{margin:0 0 6px; font-size:18px; letter-spacing:-.01em}
-    .card p{margin:0; color:var(--muted); font-weight:650; line-height:1.45; font-size:14px}
-
-    .split{display:grid; grid-template-columns:1.05fr .95fr; gap:14px; align-items:stretch}
-    .demo-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px}
-    .thumb{
-      border-radius:18px;
-      background:linear-gradient(180deg, rgba(255,255,255,.78), rgba(255,255,255,.50));
-      border:1px solid rgba(255,255,255,.66);
-      box-shadow:0 10px 30px rgba(2,12,27,.08);
-      overflow:hidden;
-      min-height:120px;
-      position:relative;
-    }
-    .thumb .img{
-      position:absolute; inset:0;
-      background:
-        radial-gradient(220px 140px at 30% 30%, rgba(111,230,229,.24), transparent 60%),
-        radial-gradient(240px 160px at 70% 45%, rgba(43,179,184,.16), transparent 62%),
-        linear-gradient(180deg, rgba(11,42,60,.12), rgba(255,255,255,.86));
-      opacity:.92;
-    }
-    .thumb .label{
-      position:absolute; left:12px; bottom:12px;
-      padding:8px 10px;
-      border-radius:999px;
-      background:rgba(255,255,255,.72);
-      border:1px solid rgba(15,23,42,.08);
-      font-weight:900;
-      color:rgba(11,42,60,.88);
-      font-size:12px;
-      letter-spacing:.01em;
-    }
-
-    .panel{
-      border-radius:var(--r);
-      background:linear-gradient(180deg, var(--card), var(--card2));
-      border:1px solid rgba(255,255,255,.66);
-      box-shadow:0 12px 40px rgba(2,12,27,.09);
-      padding:18px;
-      position:relative;
-      overflow:hidden;
-    }
-    .panel::after{
-      content:"";
-      position:absolute; inset:-80px -80px auto auto;
-      width:260px;height:260px;
-      background:radial-gradient(circle at 40% 40%, rgba(43,179,184,.18), transparent 60%);
-      pointer-events:none;
-    }
-    .panel h3{margin:0 0 10px; font-size:18px}
-    .panel ul{margin:0; padding-left:18px; color:var(--muted); font-weight:800; line-height:1.85}
-    .panel .row{margin-top:14px; display:flex; gap:12px; flex-wrap:wrap; align-items:center}
-
-    .final{
-      padding:28px 20px 30px;
-      max-width:var(--max);
-      margin:0 auto;
-      text-align:center;
-    }
-    .final h2{margin:0 0 10px; font-size:clamp(26px, 2.6vw, 38px); letter-spacing:-.02em}
-    .final p{margin:0 0 16px; color:var(--muted); font-weight:700}
-
-    .form{
-      max-width:760px;
-      margin:0 auto;
-      text-align:left;
-      display:grid;
-      gap:12px;
-    }
-    .row2{display:grid; grid-template-columns:1fr 1fr; gap:12px}
-    input, textarea{
-      width:100%;
-      padding:14px 16px;
-      border-radius:16px;
-      border:1px solid rgba(15,23,42,.10);
-      background:rgba(255,255,255,.76);
-      font-weight:700;
-      outline:none;
-    }
-    textarea{resize:vertical; min-height:120px}
-
-    .footer{
-      padding:16px 20px 18px;
-      border-top:1px solid rgba(15,23,42,.06);
-      display:flex; align-items:center; justify-content:space-between; gap:16px;
-      color:rgba(71,85,105,.80);
-      font-weight:700;
-      background:linear-gradient(180deg, rgba(255,255,255,.56), rgba(255,255,255,.42));
-    }
-    .foot-links{display:flex; gap:14px; flex-wrap:wrap; justify-content:flex-end}
-    .foot-links a{padding:8px 10px; border-radius:12px}
-    .foot-links a:hover{background:rgba(15,23,42,.04)}
-
-    /* Reveal */
-    .reveal{opacity:0; transform:translateY(14px); transition:opacity .55s var(--ease), transform .55s var(--ease)}
-    .reveal.in{opacity:1; transform:translateY(0)}
-
-    /* Responsive */
-    @media (max-width:980px){
-      .hero-inner{grid-template-columns:1fr}
-      .menu{display:none}
-      .visual{min-height:320px}
-    }
-    @media (max-width:860px){
-      .grid3{grid-template-columns:1fr}
-      .split{grid-template-columns:1fr}
-      .demo-grid{grid-template-columns:1fr 1fr}
-    }
-    @media (max-width:520px){
-      .shell{padding:0 12px}
-      .hero{padding:28px 16px 18px}
-      .section{padding:18px 16px}
-      .final{padding:18px 16px 24px}
-      .footer{flex-direction:column; align-items:flex-start}
-      .foot-links{justify-content:flex-start}
-      .row2{grid-template-columns:1fr}
-    }
-
-    /* Reduced motion */
-    @media (prefers-reduced-motion: reduce){
-      html{scroll-behavior:auto}
-      .reveal{transition:none; opacity:1; transform:none}
-      .spiral{animation:none}
-      .btn{transition:none}
-    }
-  </style>
-</head>
-
-<body>
-  <div class="shell">
-    <div class="frame">
-
-      <!-- NAV -->
-      <header class="nav">
-        <div class="nav-inner">
-          <a class="brand" href="#top" aria-label="Markedsutvikler hjem">
-            <!-- Replace with your final MU SVG if you have it -->
-            <svg class="logo" viewBox="0 0 120 120" aria-hidden="true">
-              <defs>
-                <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0" stop-color="#0B2A3C"/>
-                  <stop offset="1" stop-color="#2BB3B8"/>
-                </linearGradient>
-              </defs>
-              <path d="M25 86V30c0-8 10-10 14-3l18 30 18-30c4-7 14-5 14 3v56c0 8-10 10-14 3L57 59 39 89c-4 7-14 5-14-3z" fill="url(#lg)" opacity=".95"/>
-              <path d="M57 59l18 30c4 7 14 5 14-3V30" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/>
-            </svg>
-            <strong>MARKEDSUTVIKLER</strong>
-          </a>
-
-          <nav class="menu" aria-label="Meny">
-            <a href="#tjenester">Tjenester</a>
-            <a href="#demo">Demo</a>
-            <a href="#priser">Priser</a>
-            <a href="#kontakt">Kontakt</a>
-          </nav>
-
-          <a class="btn btn-primary" href="#kontakt">Få gratis vurdering</a>
-        </div>
-      </header>
-
-      <!-- HERO -->
-      <main id="top">
-        <section class="hero">
-          <div class="hero-inner">
-            <div class="reveal">
-              <div class="kicker"><span class="dot"></span> Nettsider · Markedsføring · Synlighet</div>
-              <h1>Profesjonelle nettsider.<br/>Laget for små bedrifter.</h1>
-              <p class="lead">Moderne, raske og brukervennlige nettsider som gir synlighet og resultater.</p>
-
-              <div class="chips" aria-label="Høydepunkter">
-                <span class="chip">Rask ytelse</span>
-                <span class="chip">Mobil først</span>
-                <span class="chip">Klar struktur</span>
-              </div>
-
-              <div class="actions">
-                <a class="btn btn-primary" href="#kontakt">Få gratis vurdering</a>
-                <a class="link" href="#prosessen">Se hvordan ›</a>
-              </div>
-
-              <div class="launch reveal" style="transition-delay:.08s">
-                <h3>🚀 Launch-program</h3>
-                <ul>
-                  <li>5 pilotprosjekter</li>
-                  <li>Nettside: <strong>10 000 kr</strong> (eks. mva)</li>
-                  <li>SoMe oppsett: <strong>5 000 kr</strong></li>
-                </ul>
-                <div style="margin-top:12px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
-                  <a class="btn btn-ghost" href="#kontakt">Send forespørsel</a>
-                  <span class="note">Begrenset antall plasser</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="visual reveal" style="transition-delay:.06s" aria-hidden="true">
-              <div class="spiral">
-                <svg viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice">
-                  <defs>
-                    <linearGradient id="s1" x1="0" y1="0" x2="1" y2="1">
-                      <stop offset="0" stop-color="#0B2A3C" stop-opacity="0.88"/>
-                      <stop offset="1" stop-color="#2BB3B8" stop-opacity="0.90"/>
-                    </linearGradient>
-                    <linearGradient id="s2" x1="1" y1="0" x2="0" y2="1">
-                      <stop offset="0" stop-color="#6FE6E5" stop-opacity="0.62"/>
-                      <stop offset="1" stop-color="#0F3A52" stop-opacity="0.72"/>
-                    </linearGradient>
-                    <filter id="blur" x="-20%" y="-20%" width="140%" height="140%">
-                      <feGaussianBlur stdDeviation="1.2"/>
-                    </filter>
-                  </defs>
-
-                  <path d="M210,470 C380,260 540,240 660,330 C790,430 920,420 1020,290"
-                        fill="none" stroke="url(#s1)" stroke-width="70" stroke-linecap="round" opacity="0.82"/>
-                  <path d="M170,520 C360,290 530,280 650,380 C790,500 960,470 1080,310"
-                        fill="none" stroke="url(#s2)" stroke-width="46" stroke-linecap="round" opacity="0.62" filter="url(#blur)"/>
-                  <path d="M250,430 C410,280 540,300 640,360 C760,430 900,410 980,320"
-                        fill="none" stroke="rgba(255,255,255,.55)" stroke-width="10" stroke-linecap="round" opacity="0.50"/>
-                </svg>
-              </div>
-
-              <div class="devices">
-                <div class="laptop">
-                  <div class="screen">
-                    <div class="row"></div>
-                    <div class="card"></div>
-                    <div class="chart"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- SERVICES -->
-        <section class="section" id="tjenester">
-          <h2 class="reveal">Hva vi gjør</h2>
-          <div class="grid3">
-            <div class="card reveal">
-              <div class="icon">▦</div>
-              <h3>Nettsider</h3>
-              <p>Firmaside med profesjonell struktur, høy ytelse og tydelig handling.</p>
-            </div>
-            <div class="card reveal" style="transition-delay:.06s">
-              <div class="icon">⌁</div>
-              <h3>Synlighet & SEO</h3>
-              <p>Grunnleggende SEO og lokalt fokus som gjør deg synlig i søk.</p>
-            </div>
-            <div class="card reveal" style="transition-delay:.12s">
-              <div class="icon">◎</div>
-              <h3>Sosiale medier</h3>
-              <p>Oppsett + startinnhold som gir en profesjonell digital tilstedeværelse.</p>
-            </div>
-          </div>
-        </section>
-
-        <!-- DEMO + PRICES -->
-        <section class="section" id="demo">
-          <div class="split">
-            <div class="reveal">
-              <h2 style="text-align:left;margin-bottom:12px">Demo & pilotprosjekter</h2>
-              <div class="demo-grid">
-                <div class="thumb"><div class="img"></div><div class="label">Demo nettside</div></div>
-                <div class="thumb"><div class="img"></div><div class="label">Pilot nettside</div></div>
-                <div class="thumb"><div class="img"></div><div class="label">Kundeprosjekt</div></div>
-                <div class="thumb"><div class="img"></div><div class="label">UI-konsept</div></div>
-              </div>
-              <p class="note" style="margin-top:10px">Noen prosjekter er utviklet som demo/pilot.</p>
-            </div>
-
-            <div class="panel reveal" id="priser" style="transition-delay:.08s">
-              <h3>Launch-program</h3>
-              <ul>
-                <li>5 pilotprosjekter</li>
-                <li>Nettside: <strong>10 000 kr</strong> (eks. mva)</li>
-                <li>SoMe oppsett: <strong>5 000 kr</strong></li>
-              </ul>
-
-              <div class="row">
-                <a class="btn btn-primary" href="#kontakt">Send forespørsel</a>
-                <a class="btn btn-ghost" href="#kontakt">Se alle pakker</a>
-              </div>
-
-              <div class="note" style="margin-top:12px">
-                Garanti: <strong>30 dager gratis feilretting</strong>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- PROCESS -->
-        <section class="section" id="prosessen">
-          <h2 class="reveal">Slik jobber vi</h2>
-          <div class="grid3">
-            <div class="card reveal">
-              <div class="icon">1</div>
-              <h3>Analyse</h3>
-              <p>Kort kartlegging av mål, behov og innhold.</p>
-            </div>
-            <div class="card reveal" style="transition-delay:.06s">
-              <div class="icon">2</div>
-              <h3>Struktur</h3>
-              <p>Sideoppsett som gjør det lett å forstå og handle.</p>
-            </div>
-            <div class="card reveal" style="transition-delay:.12s">
-              <div class="icon">3</div>
-              <h3>Design & utvikling</h3>
-              <p>Moderne uttrykk, høy ytelse, mobil først.</p>
-            </div>
-          </div>
-        </section>
-
-        <!-- CONTACT -->
-        <section class="final" id="kontakt">
-          <h2 class="reveal">Klar for en profesjonell start?</h2>
-          <p class="reveal" style="transition-delay:.06s">Send en kort forespørsel — vi svarer raskt.</p>
-
-          <form class="form reveal" style="transition-delay:.12s" onsubmit="return handleSubmit(event)">
-            <div class="row2">
-              <input name="name" required placeholder="Navn" autocomplete="name" />
-              <input name="email" required placeholder="E-post" type="email" autocomplete="email" />
-            </div>
-            <input name="company" placeholder="Bedrift (valgfritt)" autocomplete="organization" />
-            <textarea name="message" required placeholder="Hva trenger du? (nettside / SEO / SoMe)"></textarea>
-
-            <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center">
-              <button class="btn btn-primary" type="submit">Få gratis vurdering</button>
-              <span id="status" class="note"></span>
-            </div>
-          </form>
-        </section>
-      </main>
-
-      <!-- FOOTER -->
-      <footer class="footer">
-        <div><strong style="color:rgba(11,42,60,.88)">MARKEDSUTVIKLER</strong> © <span id="year"></span></div>
-        <div class="foot-links">
-          <a href="#tjenester">Tjenester</a>
-          <a href="#demo">Demo</a>
-          <a href="#priser">Priser</a>
-          <a href="#kontakt">Kontakt</a>
-        </div>
-      </footer>
-
+function renderBrief(mountEl){
+  let step=0;
+  mountEl.innerHTML = `
+    <div class="note"><b>Spørsmål <span data-stepN>1</span>/10</b></div>
+    <div style="margin-top:10px"><b data-qTitle></b></div>
+    <div class="note" style="margin-top:6px" data-qHelp></div>
+    <div style="margin-top:10px" data-qCtrl></div>
+    <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-ghost" type="button" data-prev>Tilbake</button>
+      <button class="btn btn-primary" type="button" data-next>Neste</button>
+      <button class="btn btn-primary" type="button" data-gen>Generer JSON</button>
     </div>
-  </div>
+  `;
 
-  <script>
-    // Year
-    document.getElementById("year").textContent = new Date().getFullYear();
+  const stepN = mountEl.querySelector("[data-stepN]");
+  const qTitle= mountEl.querySelector("[data-qTitle]");
+  const qHelp = mountEl.querySelector("[data-qHelp]");
+  const qCtrl = mountEl.querySelector("[data-qCtrl]");
+  const prevQ = mountEl.querySelector("[data-prev]");
+  const nextQ = mountEl.querySelector("[data-next]");
+  const genQ  = mountEl.querySelector("[data-gen]");
 
-    // Scroll reveal (subtle)
-    const els = document.querySelectorAll(".reveal");
-    const io = new IntersectionObserver((entries) => {
-      for (const e of entries) if (e.isIntersecting) e.target.classList.add("in");
-    }, { threshold: 0.12 });
-    els.forEach(el => io.observe(el));
+  function paint(){
+    const s = steps[step];
+    stepN.textContent = String(step+1);
+    qTitle.textContent = s.label;
+    qHelp.textContent = s.help;
 
-    // Demo submit (replace with Vercel API later)
-    function handleSubmit(ev){
-      ev.preventDefault();
-      const s = document.getElementById("status");
-      s.textContent = "Sendt ✅ (koble til backend senere)";
-      ev.target.reset();
-      return false;
+    if(s.type==="text"){
+      qCtrl.innerHTML = `<input placeholder="${s.ph||""}" value="${briefState[s.key]||""}" style="width:100%;padding:12px 14px;border-radius:14px;border:1px solid rgba(15,23,42,.10);background:rgba(255,255,255,.70);font-weight:800">`;
+      qCtrl.querySelector("input").addEventListener("input",(e)=> briefState[s.key]=e.target.value);
+    } else if(s.type==="textarea"){
+      qCtrl.innerHTML = `<textarea placeholder="${s.ph||""}" style="width:100%;min-height:90px;padding:12px 14px;border-radius:14px;border:1px solid rgba(15,23,42,.10);background:rgba(255,255,255,.70);font-weight:800"></textarea>`;
+      qCtrl.querySelector("textarea").value = (briefState[s.key]||"");
+      qCtrl.querySelector("textarea").addEventListener("input",(e)=> briefState[s.key]=e.target.value);
+    } else {
+      qCtrl.innerHTML = `<select style="width:100%;padding:12px 14px;border-radius:14px;border:1px solid rgba(15,23,42,.10);background:rgba(255,255,255,.70);font-weight:800">
+        ${s.options.map(o=>`<option value="${o.v}" ${briefState[s.key]===o.v?"selected":""}>${o.t}</option>`).join("")}
+      </select>`;
+      qCtrl.querySelector("select").addEventListener("change",(e)=> briefState[s.key]=e.target.value);
     }
-  </script>
-</body>
-</html>
+
+    prevQ.disabled = step===0;
+    nextQ.style.display = step===steps.length-1 ? "none" : "";
+  }
+
+  prevQ.addEventListener("click", ()=>{ if(step>0){ step--; paint(); } });
+  nextQ.addEventListener("click", ()=>{ if(step<steps.length-1){ step++; paint(); } });
+
+  genQ.addEventListener("click", ()=>{
+    const cfg = buildConfig(briefState);
+    $("#aiOut").textContent = JSON.stringify(cfg, null, 2);
+    $("#preview").textContent = `Home sections: ${cfg.pages[0].sections.filter(s=>s.enabled).map(s=>s.type).join(", ")}`;
+  });
+
+  paint();
+}
+renderBrief($("#briefBlock"));
+
+// Builder -> brief shortcut
+$("#builderToBrief")?.addEventListener("click", ()=>{
+  const chosen = opts.filter(o=>o.classList.contains("on")).map(o=>o.dataset.name).join(", ");
+  briefState.tilbud = chosen ? chosen : briefState.tilbud;
+});
+
+// Copy / download JSON
+$("#copyOut")?.addEventListener("click", async ()=>{
+  const txt = $("#aiOut").textContent.trim();
+  if(!txt.startsWith("{")) return;
+  try{ await navigator.clipboard.writeText(txt); }catch{}
+});
+$("#downloadJson")?.addEventListener("click", ()=>{
+  const txt = $("#aiOut").textContent.trim();
+  if(!txt.startsWith("{")) return;
+  const blob = new Blob([txt], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href=url; a.download="MU_CONFIG.json";
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+});
+
+// Build site (safe preview)
+function esc(s=""){ return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function buildStandaloneHTML(cfg){
+  const title = cfg.brand?.name || "Site";
+  const cta = cfg.cta?.primary?.label || "Kontakt";
+  return `<!doctype html><html lang="no"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>${esc(title)}</title><style>
+  body{margin:0;font-family:system-ui;background:#f6f8f9;color:#071a24}
+  .wrap{max-width:980px;margin:0 auto;padding:18px}
+  .btn{display:inline-flex;padding:12px 16px;border-radius:999px;background:linear-gradient(135deg,#0B2A3C,#2BB3B8);color:#fff;text-decoration:none;font-weight:800}
+  .card{margin-top:14px;padding:14px;border-radius:18px;background:#fff;border:1px solid rgba(10,28,40,.10)}
+  </style></head><body>
+  <div class="wrap">
+    <h1 style="margin:0 0 8px">${esc(title)}</h1>
+    <p style="margin:0 0 14px;opacity:.8">Built from MU_CONFIG.json</p>
+    <a class="btn" href="#contact">${esc(cta)}</a>
+    <div class="card">Sections: ${(cfg.pages?.[0]?.sections||[]).filter(s=>s.enabled).map(s=>esc(s.type)).join(", ")}</div>
+    <div id="contact" class="card"><b>Kontakt</b><div style="margin-top:8px;opacity:.8">Form / email / phone</div></div>
+  </div>
+  </body></html>`;
+}
+$("#buildSite")?.addEventListener("click", ()=>{
+  const txt = $("#aiOut").textContent.trim();
+  if(!txt.startsWith("{")) return;
+  let cfg; try{ cfg=JSON.parse(txt); }catch{ return; }
+  const html = buildStandaloneHTML(cfg);
+  $("#builtSite").innerHTML = `<iframe style="width:100%;height:520px;border:1px solid rgba(15,23,42,.10);border-radius:18px;background:#fff" title="Built site"></iframe>`;
+  $("#builtSite iframe").srcdoc = html;
+  window.__BUILT_HTML__ = html;
+});
+$("#downloadBuilt")?.addEventListener("click", ()=>{
+  const html = window.__BUILT_HTML__;
+  if(!html) return;
+  const blob = new Blob([html], {type:"text/html"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href=url; a.download="site-built.html";
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+});
+
+  
