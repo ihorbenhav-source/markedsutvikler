@@ -1,2175 +1,716 @@
 <!doctype html>
 <html lang="no">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover"/>
-  <title>Markedsutvikler — WOW Agency + AI Config Builder</title>
-  <meta name="description" content="Premium nettsider, SoMe og strategi. Interaktivt: case modal, pakke-bygger, AI-brief som genererer MU_CONFIG.json, preview og eksport av ferdig HTML."/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0B2A3C" />
+
+  <title>Markedsutvikler – Nettsider, synlighet og SoMe for små bedrifter</title>
+  <meta name="description" content="Markedsutvikler lager profesjonelle, raske og brukervennlige nettsider – med synlighet (SEO) og sosiale medier. Launch-program: 5 pilotprosjekter." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Markedsutvikler" />
+  <meta property="og:description" content="Nettsider • Synlighet • Sosiale medier. Profesjonell start for små bedrifter." />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="nb_NO" />
+  <!-- Set these when you have domain/assets -->
+  <meta property="og:url" content="https://example.no/" />
+  <meta property="og:image" content="https://example.no/og.jpg" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Favicons (optional) -->
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+  <!-- Basic SEO -->
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="https://example.no/" />
+
+  <!-- JSON-LD (edit later: address, phone, url, sameAs) -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"ProfessionalService",
+    "name":"Markedsutvikler",
+    "url":"https://example.no/",
+    "areaServed":[{"@type":"AdministrativeArea","name":"Østfold"}],
+    "serviceType":["Nettsider","Søkemotoroptimalisering (SEO)","Sosiale medier"],
+    "brand":{"@type":"Brand","name":"Markedsutvikler"}
+  }
+  </script>
+
   <style>
     :root{
-      --bg:#f6f8f9;
-      --panel:rgba(255,255,255,.72);
-      --panel2:rgba(255,255,255,.55);
-      --stroke:rgba(10,28,40,.10);
-      --ink:#071a24;
-      --muted:rgba(7,26,36,.68);
-      --a:#1F6F8B;
-      --b:#2CA6A4;
-      --shadow: 0 28px 90px rgba(2,16,28,.14);
-      --shadow2: 0 14px 40px rgba(2,16,28,.10);
-      --max: 1200px;
-      --pad: 22px;
-      --safeB: env(safe-area-inset-bottom, 0px);
-    }
-    [data-theme="dark"]{
-      --bg:#050d13;
-      --panel:rgba(10,22,30,.62);
-      --panel2:rgba(10,22,30,.45);
-      --stroke:rgba(255,255,255,.10);
-      --ink:#eef6fb;
-      --muted:rgba(238,246,251,.68);
-      --shadow: 0 30px 110px rgba(0,0,0,.50);
-      --shadow2: 0 16px 50px rgba(0,0,0,.35);
+      --navy:#0B2A3C;
+      --navy2:#0F3A52;
+      --teal:#2BB3B8;
+      --teal2:#6FE6E5;
+
+      --bg:#F6F8FB;
+      --card:rgba(255,255,255,.72);
+      --card2:rgba(255,255,255,.50);
+      --line:rgba(15,23,42,.10);
+
+      --ink:rgba(11,42,60,.95);
+      --muted:rgba(71,85,105,.92);
+
+      --shadow:0 18px 50px rgba(2,12,27,.10);
+      --shadow2:0 10px 30px rgba(2,12,27,.08);
+
+      --r:22px;
+      --r2:16px;
+      --max:1120px;
+
+      --ease:cubic-bezier(.2,.8,.2,1);
     }
 
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial;
-      background:
-        radial-gradient(1200px 700px at 10% -10%, rgba(44,166,164,.22), transparent 55%),
-        radial-gradient(900px 600px at 90% 10%, rgba(31,111,139,.18), transparent 55%),
-        radial-gradient(1200px 700px at 60% 110%, rgba(44,166,164,.14), transparent 55%),
-        var(--bg);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
       color:var(--ink);
+      background:
+        radial-gradient(900px 600px at 20% 0%, rgba(111,230,229,.18), transparent 60%),
+        radial-gradient(900px 650px at 85% 10%, rgba(43,179,184,.14), transparent 60%),
+        radial-gradient(900px 650px at 50% 95%, rgba(11,42,60,.10), transparent 60%),
+        var(--bg);
       overflow-x:hidden;
     }
-    a{color:inherit; text-decoration:none}
-    .wrap{max-width:var(--max); margin:0 auto; padding:0 var(--pad)}
-    .row{display:flex; align-items:center; justify-content:space-between; gap:12px}
-    .hide{display:none !important}
 
-    /* Buttons */
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+    .container{max-width:var(--max);margin:0 auto;padding:0 20px}
+
+    /* App shell like your best mock */
+    .shell{
+      margin:22px auto 46px;
+      padding:0 20px;
+      max-width:calc(var(--max) + 40px);
+    }
+    .frame{
+      border-radius:30px;
+      overflow:hidden;
+      background:linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.70));
+      border:1px solid rgba(255,255,255,.60);
+      box-shadow:var(--shadow);
+      position:relative;
+    }
+
+    /* NAV */
+    .nav{
+      position:sticky; top:0; z-index:50;
+      backdrop-filter: blur(12px);
+      background:linear-gradient(180deg, rgba(255,255,255,.86), rgba(255,255,255,.58));
+      border-bottom:1px solid rgba(15,23,42,.06);
+    }
+    .nav-inner{
+      display:flex; align-items:center; justify-content:space-between; gap:16px;
+      padding:16px 20px;
+      max-width:var(--max); margin:0 auto;
+    }
+    .brand{display:flex; align-items:center; gap:12px; min-width:220px}
+    .brand strong{
+      font-weight:900; letter-spacing:.12em;
+      text-transform:uppercase;
+      font-size:13px;
+      color:rgba(11,42,60,.92);
+      white-space:nowrap;
+    }
+    .logo{width:40px;height:40px;flex:0 0 auto;filter:drop-shadow(0 10px 20px rgba(2,12,27,.10))}
+    .menu{display:flex; gap:16px; align-items:center; color:rgba(15,23,42,.72); font-weight:700}
+    .menu a{padding:8px 10px;border-radius:12px}
+    .menu a:hover{background:rgba(15,23,42,.04)}
     .btn{
-      border:1px solid var(--stroke);
-      background: var(--panel2);
-      color:var(--ink);
+      display:inline-flex; align-items:center; justify-content:center;
+      border:0; cursor:pointer;
       padding:12px 16px;
       border-radius:999px;
-      font-weight:950;
-      font-size:14px;
-      cursor:pointer;
+      font-weight:900;
+      letter-spacing:.01em;
+      transition:transform .15s var(--ease), box-shadow .15s var(--ease), opacity .15s var(--ease);
       user-select:none;
-      backdrop-filter: blur(14px);
-      box-shadow: var(--shadow2);
-      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease, background .15s ease, opacity .15s ease;
-      display:inline-flex; align-items:center; gap:10px; justify-content:center;
       white-space:nowrap;
-      -webkit-tap-highlight-color: transparent;
     }
-    .btn:hover{transform: translateY(-2px); box-shadow: var(--shadow)}
-    .btn:active{transform: translateY(0)}
-    .btnPrimary{
-      border-color: transparent;
-      background: linear-gradient(135deg, var(--a), var(--b));
+    .btn-primary{
       color:#fff;
-      box-shadow: 0 18px 55px rgba(31,111,139,.28);
+      background:linear-gradient(135deg, var(--navy), var(--teal));
+      box-shadow:0 14px 30px rgba(11,42,60,.18);
     }
-    .btnIcon{width:46px; height:46px; padding:0}
-    .btnSmall{padding:10px 12px; font-size:13px}
-    .btnWide{width:100%}
+    .btn-primary:hover{transform:translateY(-1px)}
+    .btn-ghost{
+      background:rgba(255,255,255,.62);
+      border:1px solid rgba(15,23,42,.10);
+      color:rgba(15,23,42,.86);
+      box-shadow:var(--shadow2);
+    }
+    .btn-ghost:hover{transform:translateY(-1px)}
+    .link{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:10px 6px;
+      border-radius:12px;
+      color:rgba(15,23,42,.72);
+      font-weight:800;
+    }
+    .link:hover{color:rgba(15,23,42,.92)}
 
-    /* Header */
-    header{
-      position:sticky; top:0; z-index:60;
-      backdrop-filter: blur(16px);
-      background: color-mix(in srgb, var(--bg) 70%, transparent);
-      border-bottom:1px solid color-mix(in srgb, var(--stroke) 70%, transparent);
-    }
-    .nav{height:78px}
-    .brand{display:flex; align-items:center; gap:12px; min-width:220px}
-    .brand img{width:34px; height:34px; object-fit:contain}
-    .brand strong{letter-spacing:.2px}
-    .menu{display:flex; gap:18px; align-items:center}
-    .menu a{
-      color:var(--muted);
-      font-weight:950;
-      font-size:13px;
-      padding:10px 10px;
-      border-radius:999px;
-      transition: background .15s ease, color .15s ease;
-    }
-    .menu a:hover{background: color-mix(in srgb, var(--panel) 70%, transparent); color:var(--ink)}
-    .right{display:flex; align-items:center; gap:10px}
-    .burger{display:none}
-    @media (max-width: 920px){
-      .menu{display:none}
-      .burger{display:inline-flex}
-      .nav{height:74px}
+    /* HERO */
+    .hero{
+      position:relative;
+      padding:44px 20px 26px;
+      background:
+        /* tame photo (optional) */
+        linear-gradient(180deg, rgba(255,255,255,.88), rgba(255,255,255,.78)),
+        radial-gradient(900px 600px at 15% 20%, rgba(255,255,255,.60), transparent 62%),
+        radial-gradient(900px 650px at 80% 25%, rgba(111,230,229,.18), transparent 62%);
+      overflow:hidden;
     }
 
-    /* Drawer */
-    .drawer{
-      position:fixed; inset:0; z-index:100;
-      background: rgba(0,0,0,.55);
-      display:none;
-    }
-    .drawer.open{display:block}
-    .drawerPanel{
-      position:absolute; right:0; top:0; height:100%;
-      width:min(390px, 92vw);
-      background: var(--panel);
-      backdrop-filter: blur(18px);
-      border-left:1px solid var(--stroke);
-      box-shadow: -20px 0 80px rgba(0,0,0,.35);
-      padding:16px;
-      border-top-left-radius: 22px;
-      border-bottom-left-radius: 22px;
-      animation: slide .22s ease forwards;
-      transform: translateX(10px);
-      overflow:auto;
-    }
-    @keyframes slide{to{transform: translateX(0)}}
-    .drawerPanel a{
-      display:block;
-      margin:8px 0;
-      padding:14px 12px;
-      border-radius: 16px;
-      border:1px solid var(--stroke);
-      background: var(--panel2);
-      font-weight:1000;
-    }
-    .drawerPanel .x{
-      float:right; width:46px; height:46px;
-      border-radius: 14px;
-      border:1px solid var(--stroke);
-      background: var(--panel2);
-      cursor:pointer;
-      display:grid; place-items:center;
-      font-weight:1100;
+    /* Optional background photo: set hero-bg.jpg in /assets */
+    .hero::before{
+      content:"";
+      position:absolute; inset:0;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.82), rgba(255,255,255,.74)),
+        url("assets/hero-bg.jpg") center/cover no-repeat;
+      opacity:.55; /* tame */
+      filter:saturate(.95) contrast(.98);
+      transform:scale(1.02);
+      pointer-events:none;
     }
 
-    /* Hero */
-    .hero{padding: 56px 0 22px}
-    .heroGrid{
+    .hero-inner{
+      position:relative; z-index:2;
+      max-width:var(--max); margin:0 auto;
       display:grid;
       grid-template-columns: 1.05fr .95fr;
-      gap: 22px;
-      align-items: stretch;
+      gap:26px;
+      align-items:start;
     }
     .kicker{
       display:inline-flex; align-items:center; gap:10px;
-      padding:10px 12px;
-      border-radius: 999px;
-      border:1px solid var(--stroke);
-      background: var(--panel);
-      box-shadow: var(--shadow2);
-      color: var(--muted);
-      font-weight:1100;
-      font-size:12px;
-      letter-spacing:.2px;
-      backdrop-filter: blur(14px);
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.62);
+      border:1px solid rgba(15,23,42,.08);
+      color:rgba(11,42,60,.86);
+      font-weight:900;
+      width:fit-content;
     }
-    .kdot{width:10px; height:10px; border-radius:999px; background: linear-gradient(135deg, var(--a), var(--b));
-      box-shadow: 0 0 0 8px rgba(44,166,164,.12);
-    }
+    .dot{width:8px;height:8px;border-radius:99px;background:linear-gradient(135deg,var(--teal2),var(--teal))}
     h1{
-      margin:14px 0 12px;
-      font-size: clamp(38px, 4.4vw, 62px);
-      letter-spacing: -0.03em;
-      line-height: 1.02;
+      margin:14px 0 10px;
+      font-size:clamp(36px, 3.6vw, 58px);
+      line-height:1.05;
+      letter-spacing:-.03em;
+      color:rgba(11,42,60,.96);
     }
     .lead{
-      margin:0;
-      color: var(--muted);
-      font-size: 18px;
-      line-height: 1.55;
-      max-width: 58ch;
+      margin:0 0 18px;
+      font-size:18px;
+      line-height:1.55;
+      color:var(--muted);
+      max-width:58ch;
+    }
+    .chips{
+      display:flex; flex-wrap:wrap; gap:10px;
+      margin:0 0 18px;
+    }
+    .chip{
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.60);
+      border:1px solid rgba(15,23,42,.08);
       font-weight:900;
-    }
-    .cta{display:flex; gap:12px; flex-wrap:wrap; margin-top:18px}
-    .trust{
-      margin-top: 18px;
-      display:flex; gap:10px; flex-wrap:wrap;
-      color: var(--muted);
+      color:rgba(15,23,42,.75);
       font-size:13px;
-      font-weight:1100;
     }
-    .trust span{
-      border:1px solid var(--stroke);
-      background: var(--panel2);
-      border-radius: 999px;
-      padding:10px 12px;
-      backdrop-filter: blur(14px);
+    .actions{display:flex; gap:12px; flex-wrap:wrap; align-items:center}
+
+    /* Visual (spiral + devices), spiral not “main” */
+    .visual{
+      position:relative;
+      min-height:340px;
+      border-radius:var(--r);
+      background:linear-gradient(180deg, rgba(255,255,255,.58), rgba(255,255,255,.24));
+      border:1px solid rgba(255,255,255,.62);
+      box-shadow:var(--shadow2);
+      overflow:hidden;
     }
 
-    /* WOW stage */
-    .stage{
-      position:relative;
-      border-radius: 32px;
-      border:1px solid var(--stroke);
-      background:
-        radial-gradient(900px 540px at 30% 20%, rgba(44,166,164,.35), transparent 60%),
-        radial-gradient(900px 540px at 85% 15%, rgba(31,111,139,.35), transparent 60%),
-        linear-gradient(135deg, color-mix(in srgb, var(--panel) 35%, transparent), color-mix(in srgb, var(--panel2) 55%, transparent));
-      box-shadow: var(--shadow);
-      overflow:hidden;
-      min-height: 420px;
-      transform-style: preserve-3d;
-    }
-    .grid{
-      position:absolute; inset:-30%;
-      background-image:
-        linear-gradient(color-mix(in srgb, var(--stroke) 70%, transparent) 1px, transparent 1px),
-        linear-gradient(90deg, color-mix(in srgb, var(--stroke) 70%, transparent) 1px, transparent 1px);
-      background-size: 46px 46px;
-      transform: rotate(-10deg);
-      opacity:.28;
+    .spiral{
+      position:absolute; inset:-40px -90px -80px -60px;
+      opacity:.72; /* tame */
       pointer-events:none;
+      animation:drift 18s var(--ease) infinite;
     }
-    .orb{
-      position:absolute; right:-170px; top:-190px;
-      width: 560px; height:560px;
-      border-radius: 46% 54% 58% 42% / 44% 42% 58% 56%;
-      background: conic-gradient(from 210deg, rgba(44,166,164,.95), rgba(31,111,139,.85), rgba(44,166,164,.95));
-      filter: blur(1px);
-      opacity:.86;
-      animation: float 9s ease-in-out infinite;
-      box-shadow: 0 40px 120px rgba(0,0,0,.22);
+    @keyframes drift{
+      0%,100%{transform:translate3d(0,0,0) rotate(0deg) scale(1)}
+      50%{transform:translate3d(-6px,8px,0) rotate(2deg) scale(1.01)}
     }
-    .orb2{
-      position:absolute; left:-220px; bottom:-260px;
-      width: 640px; height:640px;
-      border-radius: 58% 42% 36% 64% / 46% 54% 46% 54%;
-      background: radial-gradient(circle at 30% 30%, rgba(44,166,164,.75), rgba(31,111,139,.45), transparent 62%);
-      opacity:.65;
-      animation: float 12s ease-in-out infinite reverse;
+
+    .spiral svg{width:100%;height:100%}
+    .devices{
+      position:absolute;
+      right:-30px; bottom:-36px;
+      width:min(520px, 92%);
+      aspect-ratio: 16/10;
+      transform: rotate(-6deg);
+      filter: drop-shadow(0 30px 50px rgba(2,12,27,.16));
     }
-    @keyframes float{
-      0%,100%{transform: translateY(0) rotate(0deg)}
-      50%{transform: translateY(16px) rotate(6deg)}
-    }
-    .dash{
-      position:absolute; left:16px; right:16px; top:16px; bottom:16px;
-      border-radius: 26px;
-      background: color-mix(in srgb, var(--panel) 72%, transparent);
-      border:1px solid var(--stroke);
-      backdrop-filter: blur(16px);
-      box-shadow: 0 24px 80px rgba(2,16,28,.14);
-      overflow:hidden;
-      transform: translateZ(18px);
-    }
-    .dashTop{
-      display:flex; align-items:center; justify-content:space-between;
-      padding:12px 14px;
-      border-bottom:1px solid var(--stroke);
-    }
-    .dots{display:flex; gap:7px; align-items:center}
-    .dots i{width:10px; height:10px; border-radius:999px; background: color-mix(in srgb, var(--muted) 35%, transparent)}
-    .dashTop b{font-size:13px; letter-spacing:.2px}
-    .dashBody{
-      display:grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap: 12px;
-      padding: 14px;
-      height: calc(100% - 46px);
-    }
-    .tile{
-      border-radius: 22px;
-      border:1px solid var(--stroke);
-      background: color-mix(in srgb, var(--panel2) 70%, transparent);
-      box-shadow: var(--shadow2);
-      padding: 14px;
-      position:relative;
-      overflow:hidden;
-    }
-    .tile h3{margin:0 0 8px; font-size:14px}
-    .tile p{margin:0; color:var(--muted); font-weight:1000; font-size:12px; line-height:1.45}
-    .chart{
-      margin-top:10px;
-      height: 140px;
-      border-radius: 18px;
-      border:1px solid var(--stroke);
-      background:
-        radial-gradient(500px 220px at 20% 10%, rgba(44,166,164,.20), transparent 60%),
-        radial-gradient(520px 220px at 80% 20%, rgba(31,111,139,.16), transparent 60%),
-        color-mix(in srgb, var(--panel) 60%, transparent);
-      position:relative;
-      overflow:hidden;
-    }
-    .line{
+    .laptop{
       position:absolute; inset:0;
-      background: linear-gradient(90deg, transparent, rgba(44,166,164,.18), transparent);
-      transform: translateX(-70%);
-      animation: scan 2.6s ease-in-out infinite;
-      opacity:.9;
+      border-radius:26px;
+      background:linear-gradient(180deg, rgba(255,255,255,.90), rgba(255,255,255,.60));
+      border:1px solid rgba(15,23,42,.10);
+      overflow:hidden;
     }
-    @keyframes scan{ 50%{transform: translateX(70%)} }
-    .bars{
-      position:absolute; left:12px; right:12px; bottom:12px;
-      display:grid; grid-template-columns: repeat(6, 1fr);
-      gap:8px; align-items:end;
+    .laptop::before{
+      content:"";
+      position:absolute; left:16px; right:16px; top:16px;
+      height:16px; border-radius:999px;
+      background:rgba(15,23,42,.06);
     }
-    .bars i{
-      height: calc(18px + var(--h, 60)*1px);
-      border-radius: 12px;
-      background: linear-gradient(180deg, rgba(44,166,164,.55), rgba(31,111,139,.35));
-      border:1px solid rgba(44,166,164,.35);
-      filter: saturate(1.05);
+    .laptop .screen{
+      position:absolute; left:16px; right:16px; top:44px; bottom:18px;
+      border-radius:18px;
+      background:
+        radial-gradient(240px 160px at 20% 25%, rgba(111,230,229,.26), transparent 65%),
+        radial-gradient(260px 160px at 70% 35%, rgba(43,179,184,.16), transparent 65%),
+        linear-gradient(180deg, rgba(11,42,60,.10), rgba(255,255,255,.86));
+      border:1px solid rgba(15,23,42,.07);
     }
+    .laptop .screen .row{position:absolute;left:18px;right:18px;top:18px;height:14px;border-radius:10px;background:rgba(15,23,42,.08)}
+    .laptop .screen .card{position:absolute;left:18px;right:18px;top:50px;height:90px;border-radius:18px;background:rgba(255,255,255,.56);border:1px solid rgba(15,23,42,.08)}
+    .laptop .screen .chart{position:absolute;left:18px;right:18px;bottom:18px;height:90px;border-radius:18px;background:rgba(255,255,255,.56);border:1px solid rgba(15,23,42,.08)}
+
+    /* Launch */
+    .launch{
+      margin-top:18px;
+      max-width:560px;
+      border-radius:var(--r);
+      padding:18px 18px 16px;
+      background:linear-gradient(180deg, rgba(255,255,255,.72), rgba(255,255,255,.46));
+      border:1px solid rgba(255,255,255,.64);
+      box-shadow:var(--shadow2);
+      backdrop-filter: blur(12px);
+    }
+    .launch h3{
+      margin:0 0 8px;
+      font-size:18px;
+      letter-spacing:-.01em;
+      color:rgba(11,42,60,.92);
+      display:flex; align-items:center; gap:10px;
+    }
+    .launch ul{margin:0; padding:0 0 0 18px; color:var(--muted); font-weight:800; line-height:1.85}
+    .note{font-size:12px;color:rgba(71,85,105,.74);font-weight:800}
 
     /* Sections */
-    section{padding: 42px 0}
-    .head{
-      display:flex; align-items:flex-end; justify-content:space-between; gap:14px;
-      margin-bottom: 16px;
+    .section{padding:26px 20px; max-width:var(--max); margin:0 auto}
+    .section h2{
+      margin:0 0 14px;
+      font-size:clamp(24px, 2.2vw, 34px);
+      letter-spacing:-.02em;
+      text-align:center;
+      color:rgba(11,42,60,.92);
     }
-    .head h2{margin:0; font-size: clamp(22px, 2.6vw, 34px); letter-spacing:-.02em}
-    .head p{margin:0; color:var(--muted); max-width: 60ch; line-height:1.5; font-weight:1000; font-size:14px}
 
-    /* Cards */
-    .grid3{display:grid; grid-template-columns: repeat(3,1fr); gap:14px}
+    .grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
     .card{
-      border-radius: 24px;
-      border:1px solid var(--stroke);
-      background: var(--panel);
-      box-shadow: var(--shadow2);
-      padding: 18px;
-      overflow:hidden;
+      border-radius:var(--r2);
+      background:linear-gradient(180deg, var(--card), var(--card2));
+      border:1px solid rgba(255,255,255,.64);
+      box-shadow:0 12px 38px rgba(2,12,27,.08);
+      padding:16px;
       position:relative;
-      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+      overflow:hidden;
+      min-height:120px;
     }
-    .card:hover{transform: translateY(-6px); box-shadow: var(--shadow); border-color: rgba(44,166,164,.45)}
-    .card .ic{
-      width:48px; height:48px; border-radius: 16px;
-      border:1px solid rgba(44,166,164,.35);
-      background: linear-gradient(135deg, rgba(31,111,139,.18), rgba(44,166,164,.16));
-      display:grid; place-items:center;
-      margin-bottom: 12px;
-      box-shadow: 0 18px 45px rgba(31,111,139,.14);
-    }
-    .card h3{margin:0 0 8px}
-    .card p{margin:0 0 14px; color:var(--muted); line-height:1.55; font-weight:1000}
-    .card .more{
-      display:inline-flex; align-items:center; gap:8px;
-      font-weight:1100;
-      border:1px solid var(--stroke);
-      background: var(--panel2);
-      border-radius: 999px;
-      padding:10px 12px;
-      cursor:pointer;
-    }
-    .sheen{
-      position:absolute; inset:-60px;
-      background: radial-gradient(circle at var(--mx,30%) var(--my,30%), rgba(44,166,164,.22), transparent 45%);
-      opacity:0;
-      transition: opacity .15s ease;
+    .card::after{
+      content:"";
+      position:absolute; inset:-70px -90px auto auto;
+      width:200px;height:200px;
+      background:radial-gradient(circle at 40% 40%, rgba(111,230,229,.22), transparent 60%);
       pointer-events:none;
     }
-    .card:hover .sheen{opacity:1}
-
-    /* Portfolio */
-    .filters{display:flex; gap:10px; flex-wrap:wrap}
-    .chip{
-      border:1px solid var(--stroke);
-      background: var(--panel2);
-      border-radius: 999px;
-      padding:10px 12px;
-      font-weight:1100;
-      cursor:pointer;
-      transition: transform .15s ease, border-color .15s ease;
-    }
-    .chip.active{border-color: rgba(44,166,164,.55)}
-    .chip:hover{transform: translateY(-1px)}
-    .portfolio{display:grid; grid-template-columns: repeat(3,1fr); gap:14px}
-    .work{
-      border-radius: 24px;
-      border:1px solid var(--stroke);
-      background: var(--panel);
-      box-shadow: var(--shadow2);
-      overflow:hidden;
-      position:relative;
-      cursor:pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .thumb{
-      height: 190px;
-      background:
-        radial-gradient(600px 260px at 30% 20%, rgba(44,166,164,.30), transparent 62%),
-        radial-gradient(600px 260px at 80% 20%, rgba(31,111,139,.22), transparent 62%),
-        linear-gradient(135deg, color-mix(in srgb, var(--panel) 55%, transparent), color-mix(in srgb, var(--panel2) 75%, transparent));
-      border-bottom:1px solid var(--stroke);
-      position:relative;
-      overflow:hidden;
-    }
-    .thumb::after{
-      content:"";
-      position:absolute; inset:-25%;
-      background-image:
-        linear-gradient(color-mix(in srgb, var(--stroke) 70%, transparent) 1px, transparent 1px),
-        linear-gradient(90deg, color-mix(in srgb, var(--stroke) 70%, transparent) 1px, transparent 1px);
-      background-size: 44px 44px;
-      transform: rotate(10deg);
-      opacity:.22;
-    }
-    .work .info{padding:14px}
-    .work b{display:block}
-    .work small{display:block; margin-top:6px; color:var(--muted); font-weight:1000; line-height:1.4}
-    .tag{
-      position:absolute; top:12px; left:12px;
-      border-radius: 999px;
-      padding: 8px 10px;
-      border:1px solid rgba(44,166,164,.45);
-      background: rgba(44,166,164,.12);
-      font-weight:1100;
-      font-size:12px;
-    }
-
-    /* Builder */
-    .builder{display:grid; grid-template-columns: 1.1fr .9fr; gap:14px}
-    .box{
-      border-radius: 28px;
-      border:1px solid var(--stroke);
-      background: var(--panel);
-      box-shadow: var(--shadow2);
-      padding: 18px;
-    }
-    .opt{
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
-      padding: 12px 12px;
-      border-radius: 18px;
-      border:1px solid var(--stroke);
-      background: var(--panel2);
-      margin: 10px 0;
-      cursor:pointer;
-      user-select:none;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .opt:hover{border-color: rgba(44,166,164,.45)}
-    .opt b{font-size:13px}
-    .opt small{display:block; margin-top:4px; color:var(--muted); font-weight:1000}
-    .chk{
-      width:48px; height:30px; border-radius: 999px;
-      border:1px solid rgba(44,166,164,.35);
-      background: rgba(44,166,164,.10);
-      position:relative;
-      flex:0 0 auto;
-    }
-    .chk i{
-      position:absolute; top:3px; left:3px;
-      width:24px; height:24px; border-radius:999px;
-      background: linear-gradient(135deg, var(--a), var(--b));
-      transition: left .18s ease;
-      box-shadow: 0 12px 28px rgba(31,111,139,.25);
-    }
-    .opt.on .chk i{left:21px}
-    .total{font-size: 44px; letter-spacing:-.03em; margin: 10px 0 2px; font-weight:1200}
-    .sub{color:var(--muted); font-weight:1100}
-    .list{margin-top:12px; color:var(--muted); font-weight:1000; font-size:13px; line-height:1.6}
-
-    /* AI */
-    .ai{display:grid; grid-template-columns: 1.05fr .95fr; gap:14px; align-items:stretch}
-    .steps{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
-    .stepDot{width:12px; height:12px; border-radius:999px; border:1px solid var(--stroke); background: var(--panel2)}
-    .stepDot.on{background: linear-gradient(135deg, var(--a), var(--b)); border-color: transparent}
-    .qTitle{font-weight:1200; letter-spacing:-.01em; margin: 0 0 10px}
-    .qHelp{margin:0; color:var(--muted); font-weight:1000; line-height:1.45}
-    .qControls{margin-top:12px; display:grid; gap:10px}
-    .qControls input, .qControls select, .qControls textarea{
-      width:100%;
-      padding:12px 12px;
-      border-radius: 16px;
-      border:1px solid var(--stroke);
-      background: color-mix(in srgb, var(--panel2) 60%, transparent);
-      color:var(--ink);
-      outline:none;
-      font-size:14px;
-      font-weight:1000;
-    }
-    .qControls textarea{min-height: 88px; resize: vertical}
-    .qRow{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
-    .result{
-      white-space: pre-wrap;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size: 12.5px;
-      line-height: 1.55;
-      color: color-mix(in srgb, var(--ink) 92%, transparent);
-      background: color-mix(in srgb, var(--panel2) 70%, transparent);
-      border:1px solid var(--stroke);
-      border-radius: 18px;
-      padding: 12px;
-      min-height: 220px;
-      overflow:auto;
-    }
-    .preview{
-      border-radius: 18px;
-      border:1px solid var(--stroke);
-      background: color-mix(in srgb, var(--panel2) 55%, transparent);
-      padding: 12px;
-    }
-    .preview h4{margin:0 0 10px; font-size:14px; letter-spacing:-.01em}
-    .wire{
-      border:1px solid var(--stroke);
-      border-radius: 16px;
-      background: color-mix(in srgb, var(--panel) 55%, transparent);
-      padding: 12px;
-      margin: 10px 0;
-    }
-    .wire b{display:block}
-    .wire small{display:block; margin-top:6px; color:var(--muted); font-weight:1000; line-height:1.35}
-
-    /* Reviews */
-    .slider{
-      border-radius: 28px;
-      border:1px solid var(--stroke);
-      background: var(--panel);
-      box-shadow: var(--shadow2);
-      overflow:hidden;
-      touch-action: pan-y;
-    }
-    .track{display:flex; transition: transform .35s ease; will-change: transform}
-    .slide{min-width: 100%; padding: 18px; display:grid; grid-template-columns: 1fr .9fr; gap: 14px; align-items:center}
-    .quote{font-weight:1100; font-size: 18px; line-height:1.35; letter-spacing:-.01em}
-    .who{margin-top:10px; color:var(--muted); font-weight:1100}
-    .miniMock{
-      border-radius: 22px;
-      border:1px solid var(--stroke);
-      background:
-        radial-gradient(650px 260px at 30% 20%, rgba(44,166,164,.22), transparent 62%),
-        radial-gradient(650px 260px at 80% 30%, rgba(31,111,139,.16), transparent 62%),
-        color-mix(in srgb, var(--panel2) 70%, transparent);
-      min-height: 200px;
-      position:relative;
-      overflow:hidden;
-    }
-    .miniMock .bar{position:absolute; left:14px; right:14px; top:14px; height:14px; border-radius:999px; background: color-mix(in srgb, var(--stroke) 60%, transparent)}
-    .miniMock .pills{position:absolute; left:14px; right:14px; bottom:14px; display:flex; gap:10px; flex-wrap:wrap}
-    .miniMock .pills i{width: 88px; height: 28px; border-radius:999px; border:1px solid var(--stroke); background: var(--panel); display:inline-block}
-    .snav{display:flex; align-items:center; justify-content:space-between; padding: 10px 12px; border-top:1px solid var(--stroke);
-      background: color-mix(in srgb, var(--panel2) 70%, transparent);}
-    .sdots{display:flex; gap:8px}
-    .sdots button{width:10px; height:10px; border-radius:999px; border:0; cursor:pointer; background: color-mix(in srgb, var(--muted) 35%, transparent)}
-    .sdots button.active{background: linear-gradient(135deg, var(--a), var(--b))}
-    .ar{display:flex; gap:8px}
-
-    /* Contact */
-    .contact{display:grid; grid-template-columns: 1fr 1fr; gap:14px}
-    .form label{display:block; font-size:12px; color:var(--muted); font-weight:1100; margin:10px 0 6px}
-    .form input,.form textarea{
-      width:100%;
-      padding:12px 12px;
-      border-radius: 16px;
-      border:1px solid var(--stroke);
-      background: color-mix(in srgb, var(--panel2) 60%, transparent);
-      color:var(--ink);
-      outline:none;
-      font-size:14px;
-      transition: box-shadow .15s ease, border-color .15s ease;
+    .icon{
+      width:36px;height:36px;border-radius:12px;
+      background:rgba(43,179,184,.14);
+      border:1px solid rgba(43,179,184,.22);
+      display:flex; align-items:center; justify-content:center;
       font-weight:900;
+      color:rgba(11,42,60,.90);
+      margin-bottom:10px;
     }
-    .form input:focus,.form textarea:focus{border-color: rgba(44,166,164,.55); box-shadow: 0 0 0 5px rgba(44,166,164,.12)}
-    .form textarea{min-height: 120px; resize: vertical}
-    .err{display:none; color:#b51f1f; font-weight:1100; font-size:12px; margin-top:8px}
+    .card h3{margin:0 0 6px; font-size:18px; letter-spacing:-.01em}
+    .card p{margin:0; color:var(--muted); font-weight:650; line-height:1.45; font-size:14px}
 
-    /* Modals */
-    .overlay{
-      position:fixed; inset:0; z-index:120;
-      background: rgba(0,0,0,.55);
-      backdrop-filter: blur(14px);
-      display:none;
-      padding: 18px;
+    .split{display:grid; grid-template-columns:1.05fr .95fr; gap:14px; align-items:stretch}
+    .demo-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px}
+    .thumb{
+      border-radius:18px;
+      background:linear-gradient(180deg, rgba(255,255,255,.78), rgba(255,255,255,.50));
+      border:1px solid rgba(255,255,255,.66);
+      box-shadow:0 10px 30px rgba(2,12,27,.08);
+      overflow:hidden;
+      min-height:120px;
+      position:relative;
     }
-    .overlay.open{display:block}
-    .modal{
-      max-width: 980px;
-      margin: 6vh auto 0;
-      background: var(--panel);
-      border:1px solid var(--stroke);
-      border-radius: 26px;
-      box-shadow: 0 50px 140px rgba(0,0,0,.35);
+    .thumb .img{
+      position:absolute; inset:0;
+      background:
+        radial-gradient(220px 140px at 30% 30%, rgba(111,230,229,.24), transparent 60%),
+        radial-gradient(240px 160px at 70% 45%, rgba(43,179,184,.16), transparent 62%),
+        linear-gradient(180deg, rgba(11,42,60,.12), rgba(255,255,255,.86));
+      opacity:.92;
+    }
+    .thumb .label{
+      position:absolute; left:12px; bottom:12px;
+      padding:8px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.72);
+      border:1px solid rgba(15,23,42,.08);
+      font-weight:900;
+      color:rgba(11,42,60,.88);
+      font-size:12px;
+      letter-spacing:.01em;
+    }
+
+    .panel{
+      border-radius:var(--r);
+      background:linear-gradient(180deg, var(--card), var(--card2));
+      border:1px solid rgba(255,255,255,.66);
+      box-shadow:0 12px 40px rgba(2,12,27,.09);
+      padding:18px;
+      position:relative;
       overflow:hidden;
     }
-    .modalHead{
-      padding: 14px 14px;
-      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
-      border-bottom:1px solid var(--stroke);
-      background: color-mix(in srgb, var(--panel2) 70%, transparent);
+    .panel::after{
+      content:"";
+      position:absolute; inset:-80px -80px auto auto;
+      width:260px;height:260px;
+      background:radial-gradient(circle at 40% 40%, rgba(43,179,184,.18), transparent 60%);
+      pointer-events:none;
     }
-    .modalHead h3{margin:0; font-size:16px; letter-spacing:-.01em}
-    .modalHead small{display:block; margin-top:6px; color:var(--muted); font-weight:1000; line-height:1.35}
-    .close{
-      width:46px; height:46px; border-radius: 14px;
-      border:1px solid var(--stroke);
-      background: var(--panel2);
-      cursor:pointer;
-      display:grid; place-items:center;
-      font-weight:1200;
-    }
-    .modalBody{
-      padding: 14px;
-      display:grid;
-      grid-template-columns: 1.05fr .95fr;
-      gap: 14px;
-    }
-    .modalBox{
-      border-radius: 22px;
-      border:1px solid var(--stroke);
-      background: var(--panel2);
-      padding: 14px;
-    }
-    .metricGrid{
-      display:grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
-      margin-top: 12px;
-    }
-    .metric{
-      border-radius: 18px;
-      border:1px solid var(--stroke);
-      background: color-mix(in srgb, var(--panel) 65%, transparent);
-      padding: 12px;
-    }
-    .metric b{display:block; font-size:18px}
-    .metric span{display:block; margin-top:6px; color:var(--muted); font-weight:1000; font-size:12px}
+    .panel h3{margin:0 0 10px; font-size:18px}
+    .panel ul{margin:0; padding-left:18px; color:var(--muted); font-weight:800; line-height:1.85}
+    .panel .row{margin-top:14px; display:flex; gap:12px; flex-wrap:wrap; align-items:center}
 
-    /* Toast */
-    .toast{
-      position:fixed; left:50%; bottom: calc(16px + var(--safeB)); transform: translateX(-50%);
-      background: color-mix(in srgb, var(--panel) 80%, transparent);
-      border:1px solid var(--stroke);
-      box-shadow: var(--shadow2);
-      border-radius: 999px;
-      padding: 12px 14px;
-      display:none;
-      backdrop-filter: blur(16px);
-      font-weight:1100;
-      z-index: 220;
-      max-width: calc(100% - 24px);
+    .final{
+      padding:28px 20px 30px;
+      max-width:var(--max);
+      margin:0 auto;
       text-align:center;
     }
+    .final h2{margin:0 0 10px; font-size:clamp(26px, 2.6vw, 38px); letter-spacing:-.02em}
+    .final p{margin:0 0 16px; color:var(--muted); font-weight:700}
+
+    .form{
+      max-width:760px;
+      margin:0 auto;
+      text-align:left;
+      display:grid;
+      gap:12px;
+    }
+    .row2{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    input, textarea{
+      width:100%;
+      padding:14px 16px;
+      border-radius:16px;
+      border:1px solid rgba(15,23,42,.10);
+      background:rgba(255,255,255,.76);
+      font-weight:700;
+      outline:none;
+    }
+    textarea{resize:vertical; min-height:120px}
+
+    .footer{
+      padding:16px 20px 18px;
+      border-top:1px solid rgba(15,23,42,.06);
+      display:flex; align-items:center; justify-content:space-between; gap:16px;
+      color:rgba(71,85,105,.80);
+      font-weight:700;
+      background:linear-gradient(180deg, rgba(255,255,255,.56), rgba(255,255,255,.42));
+    }
+    .foot-links{display:flex; gap:14px; flex-wrap:wrap; justify-content:flex-end}
+    .foot-links a{padding:8px 10px; border-radius:12px}
+    .foot-links a:hover{background:rgba(15,23,42,.04)}
 
     /* Reveal */
-    .reveal{opacity:0; transform: translateY(12px); transition: opacity .55s ease, transform .55s ease}
-    .reveal.on{opacity:1; transform: translateY(0)}
+    .reveal{opacity:0; transform:translateY(14px); transition:opacity .55s var(--ease), transform .55s var(--ease)}
+    .reveal.in{opacity:1; transform:translateY(0)}
 
-    /* Mobile improvements */
-    @media (max-width: 980px){
-      .heroGrid{grid-template-columns:1fr}
-      .dashBody{grid-template-columns:1fr}
+    /* Responsive */
+    @media (max-width:980px){
+      .hero-inner{grid-template-columns:1fr}
+      .menu{display:none}
+      .visual{min-height:320px}
+    }
+    @media (max-width:860px){
       .grid3{grid-template-columns:1fr}
-      .portfolio{grid-template-columns:1fr}
-      .builder{grid-template-columns:1fr}
-      .ai{grid-template-columns:1fr}
-      .slide{grid-template-columns:1fr}
-      .contact{grid-template-columns:1fr}
-      .stage{min-height:360px}
-      .lead{font-size:17px}
-      section{padding: 34px 0}
+      .split{grid-template-columns:1fr}
+      .demo-grid{grid-template-columns:1fr 1fr}
+    }
+    @media (max-width:520px){
+      .shell{padding:0 12px}
+      .hero{padding:28px 16px 18px}
+      .section{padding:18px 16px}
+      .final{padding:18px 16px 24px}
+      .footer{flex-direction:column; align-items:flex-start}
+      .foot-links{justify-content:flex-start}
+      .row2{grid-template-columns:1fr}
     }
 
-    /* Fullscreen modal on mobile */
-    @media (max-width: 720px){
-      .overlay{padding: 10px}
-      .modal{
-        margin: 0;
-        max-width: none;
-        height: calc(100dvh - 20px);
-        border-radius: 20px;
-        display:flex;
-        flex-direction:column;
-      }
-      .modalBody{grid-template-columns:1fr; overflow:auto}
-      .metricGrid{grid-template-columns:1fr}
-    }
-
-    /* Bottom sticky CTA (mobile) */
-    .bottomCta{
-      position:fixed;
-      left: 12px; right: 12px;
-      bottom: calc(12px + var(--safeB));
-      z-index: 70;
-      display:none;
-      gap:10px;
-      align-items:center;
-      padding: 10px;
-      border-radius: 18px;
-      border:1px solid var(--stroke);
-      background: color-mix(in srgb, var(--panel) 80%, transparent);
-      backdrop-filter: blur(16px);
-      box-shadow: var(--shadow2);
-    }
-    .bottomCta small{color:var(--muted); font-weight:1100; line-height:1.2}
-    .bottomCta .grow{flex:1}
-    @media (max-width: 920px){
-      .bottomCta{display:flex}
-      body{padding-bottom: calc(78px + var(--safeB))}
-    }
-
-    /* Reduce motion */
+    /* Reduced motion */
     @media (prefers-reduced-motion: reduce){
-      *{animation:none !important; transition:none !important}
       html{scroll-behavior:auto}
-    }
-
-    footer{
-      padding: 26px 0 40px;
-      border-top:1px solid var(--stroke);
-      color:var(--muted);
-      font-weight:1100;
-      font-size:13px;
+      .reveal{transition:none; opacity:1; transform:none}
+      .spiral{animation:none}
+      .btn{transition:none}
     }
   </style>
 </head>
 
 <body>
-  <!-- Drawer -->
-  <div class="drawer" id="drawer" aria-hidden="true">
-    <div class="drawerPanel">
-      <button class="x" id="closeDrawer" aria-label="Close">✕</button>
-      <div style="clear:both; height:8px"></div>
-      <a href="#tjenester" data-close>Tjenester</a>
-      <a href="#portfolio" data-close>Portfolio</a>
-      <a href="#builder" data-close>Bygg pakke</a>
-      <a href="#ai" data-close>AI-brief</a>
-      <a href="#reviews" data-close>Anmeldelser</a>
-      <a href="#kontakt" data-close>Kontakt</a>
-      <div style="height:12px"></div>
-      <button class="btn btnPrimary btnWide" id="openBrief2">Start med AI-brief</button>
-    </div>
-  </div>
+  <div class="shell">
+    <div class="frame">
 
-  <!-- CASE MODAL -->
-  <div class="overlay" id="caseOverlay" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true" aria-label="Case">
-      <div class="modalHead">
-        <div>
-          <h3 id="caseTitle">Case</h3>
-          <small id="caseSubtitle">—</small>
+      <!-- NAV -->
+      <header class="nav">
+        <div class="nav-inner">
+          <a class="brand" href="#top" aria-label="Markedsutvikler hjem">
+            <!-- Replace with your final MU SVG if you have it -->
+            <svg class="logo" viewBox="0 0 120 120" aria-hidden="true">
+              <defs>
+                <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#0B2A3C"/>
+                  <stop offset="1" stop-color="#2BB3B8"/>
+                </linearGradient>
+              </defs>
+              <path d="M25 86V30c0-8 10-10 14-3l18 30 18-30c4-7 14-5 14 3v56c0 8-10 10-14 3L57 59 39 89c-4 7-14 5-14-3z" fill="url(#lg)" opacity=".95"/>
+              <path d="M57 59l18 30c4 7 14 5 14-3V30" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/>
+            </svg>
+            <strong>MARKEDSUTVIKLER</strong>
+          </a>
+
+          <nav class="menu" aria-label="Meny">
+            <a href="#tjenester">Tjenester</a>
+            <a href="#demo">Demo</a>
+            <a href="#priser">Priser</a>
+            <a href="#kontakt">Kontakt</a>
+          </nav>
+
+          <a class="btn btn-primary" href="#kontakt">Få gratis vurdering</a>
         </div>
-        <button class="close" id="closeCase" aria-label="Close">✕</button>
-      </div>
-      <div class="modalBody">
-        <div class="modalBox">
-          <b>Oppgave</b>
-          <div id="caseTask" style="margin-top:8px; color:var(--muted); font-weight:1000; line-height:1.5"></div>
-          <div style="height:12px"></div>
-          <b>Løsning</b>
-          <div id="caseSolution" style="margin-top:8px; color:var(--muted); font-weight:1000; line-height:1.5"></div>
-        </div>
-        <div class="modalBox">
-          <b>Resultat</b>
-          <div id="caseResult" style="margin-top:8px; color:var(--muted); font-weight:1000; line-height:1.5"></div>
-          <div class="metricGrid" id="caseMetrics"></div>
-          <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap">
-            <button class="btn btnPrimary btnSmall" id="caseToBrief">Lag noe lignende</button>
-            <button class="btn btnSmall" id="caseToKontakt">Få tilbud</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+      </header>
 
-  <!-- AI BRIEF MODAL -->
-  <div class="overlay" id="briefOverlay" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true" aria-label="AI brief">
-      <div class="modalHead">
-        <div>
-          <h3>AI-brief → MU_CONFIG.json</h3>
-          <small>Fyll ut → få JSON-konfig + preview wireframe.</small>
-        </div>
-        <button class="close" id="closeBrief" aria-label="Close">✕</button>
-      </div>
-      <div class="modalBody" style="grid-template-columns:1fr">
-        <div class="modalBox">
-          <div id="briefMount"></div>
-        </div>
-      </div>
-    </div>
-  </div>
+      <!-- HERO -->
+      <main id="top">
+        <section class="hero">
+          <div class="hero-inner">
+            <div class="reveal">
+              <div class="kicker"><span class="dot"></span> Nettsider · Markedsføring · Synlighet</div>
+              <h1>Profesjonelle nettsider.<br/>Laget for små bedrifter.</h1>
+              <p class="lead">Moderne, raske og brukervennlige nettsider som gir synlighet og resultater.</p>
 
-  <header>
-    <div class="wrap">
-      <div class="row nav">
-        <a class="brand" href="#top" aria-label="Markedsutvikler">
-          <img src="logo.png" alt="Logo"/>
-          <strong>Markedsutvikler</strong>
-        </a>
+              <div class="chips" aria-label="Høydepunkter">
+                <span class="chip">Rask ytelse</span>
+                <span class="chip">Mobil først</span>
+                <span class="chip">Klar struktur</span>
+              </div>
 
-        <nav class="menu" aria-label="Menu">
-          <a href="#tjenester">Tjenester</a>
-          <a href="#portfolio">Portfolio</a>
-          <a href="#builder">Bygg pakke</a>
-          <a href="#ai">AI-brief</a>
-          <a href="#reviews">Anmeldelser</a>
-          <a href="#kontakt">Kontakt</a>
-        </nav>
+              <div class="actions">
+                <a class="btn btn-primary" href="#kontakt">Få gratis vurdering</a>
+                <a class="link" href="#prosessen">Se hvordan ›</a>
+              </div>
 
-        <div class="right">
-          <button class="btn btnIcon" id="themeBtn" aria-label="Toggle theme">🌙</button>
-          <button class="btn btnIcon burger" id="openDrawer" aria-label="Open menu">☰</button>
-          <button class="btn btnPrimary" id="openBrief">Start med AI-brief</button>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <main id="top">
-    <!-- HERO -->
-    <section class="hero">
-      <div class="wrap heroGrid">
-        <div class="reveal">
-          <span class="kicker"><span class="kdot"></span> Premium uttrykk • Enkel prosess • Fast pris</span>
-          <h1>Nettsider som ser premium ut — og selger.</h1>
-          <p class="lead">
-            Vi bygger nettsider, SoMe og strategi for små bedrifter i Norge. Tydelig budskap, proft design, og en plan som gir vekst.
-          </p>
-          <div class="cta">
-            <button class="btn btnPrimary" id="goKontakt">Få tilbud</button>
-            <a class="btn" href="#portfolio">Se arbeid</a>
-            <button class="btn" id="quickDemo">30s WOW-demo</button>
-          </div>
-          <div class="trust">
-            <span>⚡ Levering 3–10 dager</span>
-            <span>✅ Design-system</span>
-            <span>🤖 Konfig-basert plattform</span>
-          </div>
-        </div>
-
-        <div class="stage reveal" id="stage">
-          <div class="grid"></div>
-          <div class="orb" aria-hidden="true"></div>
-          <div class="orb2" aria-hidden="true"></div>
-
-          <div class="dash" id="dash">
-            <div class="dashTop">
-              <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
-              <b>Config-driven preview</b>
-              <span style="color:var(--muted); font-weight:1100; font-size:12px">live</span>
+              <div class="launch reveal" style="transition-delay:.08s">
+                <h3>🚀 Launch-program</h3>
+                <ul>
+                  <li>5 pilotprosjekter</li>
+                  <li>Nettside: <strong>10 000 kr</strong> (eks. mva)</li>
+                  <li>SoMe oppsett: <strong>5 000 kr</strong></li>
+                </ul>
+                <div style="margin-top:12px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+                  <a class="btn btn-ghost" href="#kontakt">Send forespørsel</a>
+                  <span class="note">Begrenset antall plasser</span>
+                </div>
+              </div>
             </div>
-            <div class="dashBody">
-              <div class="tile">
-                <h3>Struktur som konverterer</h3>
-                <p>Hero → tilbud → sosialt bevis → CTA.</p>
-                <div class="chart" aria-hidden="true">
-                  <div class="line"></div>
-                  <div class="bars">
-                    <i style="--h:22"></i><i style="--h:52"></i><i style="--h:35"></i><i style="--h:64"></i><i style="--h:48"></i><i style="--h:72"></i>
+
+            <div class="visual reveal" style="transition-delay:.06s" aria-hidden="true">
+              <div class="spiral">
+                <svg viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice">
+                  <defs>
+                    <linearGradient id="s1" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0" stop-color="#0B2A3C" stop-opacity="0.88"/>
+                      <stop offset="1" stop-color="#2BB3B8" stop-opacity="0.90"/>
+                    </linearGradient>
+                    <linearGradient id="s2" x1="1" y1="0" x2="0" y2="1">
+                      <stop offset="0" stop-color="#6FE6E5" stop-opacity="0.62"/>
+                      <stop offset="1" stop-color="#0F3A52" stop-opacity="0.72"/>
+                    </linearGradient>
+                    <filter id="blur" x="-20%" y="-20%" width="140%" height="140%">
+                      <feGaussianBlur stdDeviation="1.2"/>
+                    </filter>
+                  </defs>
+
+                  <path d="M210,470 C380,260 540,240 660,330 C790,430 920,420 1020,290"
+                        fill="none" stroke="url(#s1)" stroke-width="70" stroke-linecap="round" opacity="0.82"/>
+                  <path d="M170,520 C360,290 530,280 650,380 C790,500 960,470 1080,310"
+                        fill="none" stroke="url(#s2)" stroke-width="46" stroke-linecap="round" opacity="0.62" filter="url(#blur)"/>
+                  <path d="M250,430 C410,280 540,300 640,360 C760,430 900,410 980,320"
+                        fill="none" stroke="rgba(255,255,255,.55)" stroke-width="10" stroke-linecap="round" opacity="0.50"/>
+                </svg>
+              </div>
+
+              <div class="devices">
+                <div class="laptop">
+                  <div class="screen">
+                    <div class="row"></div>
+                    <div class="card"></div>
+                    <div class="chart"></div>
                   </div>
                 </div>
               </div>
-              <div class="tile">
-                <h3>AI-brief → JSON</h3>
-                <p>10 spørsmål → MU_CONFIG.json + wireframe.</p>
-                <div style="margin-top:10px; display:grid; gap:10px">
-                  <button class="btn btnPrimary" id="openBrief3">Kjør AI-brief</button>
-                  <button class="btn" id="toAISection">Se i seksjon</button>
-                </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SERVICES -->
+        <section class="section" id="tjenester">
+          <h2 class="reveal">Hva vi gjør</h2>
+          <div class="grid3">
+            <div class="card reveal">
+              <div class="icon">▦</div>
+              <h3>Nettsider</h3>
+              <p>Firmaside med profesjonell struktur, høy ytelse og tydelig handling.</p>
+            </div>
+            <div class="card reveal" style="transition-delay:.06s">
+              <div class="icon">⌁</div>
+              <h3>Synlighet & SEO</h3>
+              <p>Grunnleggende SEO og lokalt fokus som gjør deg synlig i søk.</p>
+            </div>
+            <div class="card reveal" style="transition-delay:.12s">
+              <div class="icon">◎</div>
+              <h3>Sosiale medier</h3>
+              <p>Oppsett + startinnhold som gir en profesjonell digital tilstedeværelse.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- DEMO + PRICES -->
+        <section class="section" id="demo">
+          <div class="split">
+            <div class="reveal">
+              <h2 style="text-align:left;margin-bottom:12px">Demo & pilotprosjekter</h2>
+              <div class="demo-grid">
+                <div class="thumb"><div class="img"></div><div class="label">Demo nettside</div></div>
+                <div class="thumb"><div class="img"></div><div class="label">Pilot nettside</div></div>
+                <div class="thumb"><div class="img"></div><div class="label">Kundeprosjekt</div></div>
+                <div class="thumb"><div class="img"></div><div class="label">UI-konsept</div></div>
+              </div>
+              <p class="note" style="margin-top:10px">Noen prosjekter er utviklet som demo/pilot.</p>
+            </div>
+
+            <div class="panel reveal" id="priser" style="transition-delay:.08s">
+              <h3>Launch-program</h3>
+              <ul>
+                <li>5 pilotprosjekter</li>
+                <li>Nettside: <strong>10 000 kr</strong> (eks. mva)</li>
+                <li>SoMe oppsett: <strong>5 000 kr</strong></li>
+              </ul>
+
+              <div class="row">
+                <a class="btn btn-primary" href="#kontakt">Send forespørsel</a>
+                <a class="btn btn-ghost" href="#kontakt">Se alle pakker</a>
+              </div>
+
+              <div class="note" style="margin-top:12px">
+                Garanti: <strong>30 dager gratis feilretting</strong>
               </div>
             </div>
           </div>
+        </section>
 
-        </div>
-      </div>
-    </section>
-
-    <!-- SERVICES -->
-    <section id="tjenester">
-      <div class="wrap">
-        <div class="head">
-          <div>
-            <h2 class="reveal">Tjenester</h2>
-            <p class="reveal" style="transition-delay:.06s">Alt vi gjør er bygget for små bedrifter: raskt, tydelig, proft.</p>
-          </div>
-        </div>
-
-        <div class="grid3">
-          <article class="card reveal" data-sheen>
-            <div class="sheen"></div>
-            <div class="ic">🧱</div>
-            <h3>Nettsider</h3>
-            <p>Landing, små nettsider og multi-page. Mobil først. Premium uttrykk.</p>
-            <a class="more" href="#builder">Bygg pakke →</a>
-          </article>
-
-          <article class="card reveal" data-sheen style="transition-delay:.06s">
-            <div class="sheen"></div>
-            <div class="ic">📣</div>
-            <h3>Sosiale medier</h3>
-            <p>Profiler, designmaler og innhold som matcher nettsiden.</p>
-            <button class="more" id="openBrief4">Start brief →</button>
-          </article>
-
-          <article class="card reveal" data-sheen style="transition-delay:.12s">
-            <div class="sheen"></div>
-            <div class="ic">🎯</div>
-            <h3>Strategi</h3>
-            <p>Kanalvalg, budskap, tilbud og enkel plan. Mindre støy — mer fokus.</p>
-            <a class="more" href="#portfolio">Se arbeid →</a>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- PORTFOLIO -->
-    <section id="portfolio">
-      <div class="wrap">
-        <div class="head">
-          <div>
-            <h2 class="reveal">Portfolio (klikk for case)</h2>
-            <p class="reveal" style="transition-delay:.06s">Filtrer etter type. Klikk åpner case-modal med detaljer.</p>
-          </div>
-          <div class="filters reveal" style="transition-delay:.10s" id="filters">
-            <button class="chip active" data-filter="all">Alle</button>
-            <button class="chip" data-filter="nettside">Nettside</button>
-            <button class="chip" data-filter="some">SoMe</button>
-            <button class="chip" data-filter="strategi">Strategi</button>
-          </div>
-        </div>
-
-        <div class="portfolio" id="portfolioGrid">
-          <article class="work reveal" data-type="nettside" data-case="case1">
-            <div class="thumb"><span class="tag">Nettside</span></div>
-            <div class="info">
-              <b>Lokal tjeneste — “Book nå”</b>
-              <small>Hero + priser + galleri + CTA. Bygd for henvendelser.</small>
+        <!-- PROCESS -->
+        <section class="section" id="prosessen">
+          <h2 class="reveal">Slik jobber vi</h2>
+          <div class="grid3">
+            <div class="card reveal">
+              <div class="icon">1</div>
+              <h3>Analyse</h3>
+              <p>Kort kartlegging av mål, behov og innhold.</p>
             </div>
-          </article>
-
-          <article class="work reveal" data-type="some" data-case="case2" style="transition-delay:.06s">
-            <div class="thumb"><span class="tag">SoMe</span></div>
-            <div class="info">
-              <b>SoMe system — 15 maler</b>
-              <small>En stil, mange poster. Lett å poste uten designer.</small>
+            <div class="card reveal" style="transition-delay:.06s">
+              <div class="icon">2</div>
+              <h3>Struktur</h3>
+              <p>Sideoppsett som gjør det lett å forstå og handle.</p>
             </div>
-          </article>
-
-          <article class="work reveal" data-type="strategi" data-case="case3" style="transition-delay:.12s">
-            <div class="thumb"><span class="tag">Strategi</span></div>
-            <div class="info">
-              <b>Plan på 1 side</b>
-              <small>Kanalvalg + budskap + tilbud. Gjennomførbart.</small>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- BUILDER -->
-    <section id="builder">
-      <div class="wrap">
-        <div class="head">
-          <div>
-            <h2 class="reveal">Bygg pakke (interaktiv)</h2>
-            <p class="reveal" style="transition-delay:.06s">Velg tillegg. Total oppdateres live.</p>
-          </div>
-        </div>
-
-        <div class="builder">
-          <div class="box reveal" id="options">
-            <b style="font-size:14px">Velg hva du trenger</b>
-
-            <div class="opt on" data-price="9900" data-name="Base nettside (landing)">
-              <div>
-                <b>Base nettside (landing)</b>
-                <small>Hero + tjenester + kontakt + CTA</small>
-              </div>
-              <div class="chk"><i></i></div>
-            </div>
-
-            <div class="opt" data-price="4900" data-name="Ekstra sider (3–5 sider)">
-              <div>
-                <b>Ekstra sider (3–5 sider)</b>
-                <small>Om oss, tjenester, priser, galleri</small>
-              </div>
-              <div class="chk"><i></i></div>
-            </div>
-
-            <div class="opt" data-price="3900" data-name="Tekstpakke">
-              <div>
-                <b>Tekstpakke</b>
-                <small>Kort, tydelig, salgsfokus</small>
-              </div>
-              <div class="chk"><i></i></div>
-            </div>
-
-            <div class="opt" data-price="2900" data-name="SoMe kit (10 maler)">
-              <div>
-                <b>SoMe kit (10 maler)</b>
-                <small>Poster + stories i samme stil</small>
-              </div>
-              <div class="chk"><i></i></div>
-            </div>
-
-            <div class="opt" data-price="4900" data-name="Strategi (1 side)">
-              <div>
-                <b>Strategi (1 side)</b>
-                <small>Målgruppe, budskap, kanaler, plan</small>
-              </div>
-              <div class="chk"><i></i></div>
-            </div>
-
-            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px">
-              <button class="btn btnPrimary" style="flex:1" id="builderToBrief">Send til AI-brief</button>
-              <button class="btn" id="reset">Reset</button>
+            <div class="card reveal" style="transition-delay:.12s">
+              <div class="icon">3</div>
+              <h3>Design & utvikling</h3>
+              <p>Moderne uttrykk, høy ytelse, mobil først.</p>
             </div>
           </div>
+        </section>
 
-          <div class="box reveal" style="transition-delay:.06s">
-            <b style="font-size:14px">Din pakke</b>
-            <div class="total" id="total">9 900</div>
-            <div class="sub" id="sub">NOK • engang</div>
-            <div class="list" id="chosen"></div>
-            <div style="height:10px"></div>
-            <button class="btn btnSmall" id="builderToKontakt">Få tilbud</button>
-          </div>
-        </div>
-      </div>
-    </section>
+        <!-- CONTACT -->
+        <section class="final" id="kontakt">
+          <h2 class="reveal">Klar for en profesjonell start?</h2>
+          <p class="reveal" style="transition-delay:.06s">Send en kort forespørsel — vi svarer raskt.</p>
 
-    <!-- AI SECTION -->
-    <section id="ai">
-      <div class="wrap">
-        <div class="head">
-          <div>
-            <h2 class="reveal">AI-brief → MU_CONFIG.json</h2>
-            <p class="reveal" style="transition-delay:.06s">Генерит JSON-конфиг для платформы + preview + сборка и экспорт HTML.</p>
-          </div>
-          <div class="reveal" style="transition-delay:.10s">
-            <button class="btn btnPrimary btnSmall" id="openBriefInline">Åpne som modal</button>
-          </div>
-        </div>
-
-        <div class="ai">
-          <div class="box reveal" id="aiLeft"></div>
-
-          <div class="box reveal" style="transition-delay:.06s">
-            <b style="font-size:14px">MU_CONFIG.json</b>
-            <div class="result" id="aiOut">Fyll ut briefen til venstre. Output vises her.</div>
-
-            <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap">
-              <button class="btn btnSmall" id="copyOut">Kopier JSON</button>
-              <button class="btn btnSmall" id="downloadJson">Last ned JSON</button>
-              <button class="btn btnPrimary btnSmall" id="renderPreview">Render preview</button>
-              <button class="btn btnPrimary btnSmall" id="buildSite">Build site</button>
-              <button class="btn btnSmall" id="downloadBuilt">Last ned HTML</button>
+          <form class="form reveal" style="transition-delay:.12s" onsubmit="return handleSubmit(event)">
+            <div class="row2">
+              <input name="name" required placeholder="Navn" autocomplete="name" />
+              <input name="email" required placeholder="E-post" type="email" autocomplete="email" />
             </div>
+            <input name="company" placeholder="Bedrift (valgfritt)" autocomplete="organization" />
+            <textarea name="message" required placeholder="Hva trenger du? (nettside / SEO / SoMe)"></textarea>
 
-            <div style="height:12px"></div>
-            <div class="preview" id="preview">
-              <h4>Preview wireframe</h4>
-              <div style="color:var(--muted); font-weight:1000">Trykk “Render preview” etter du har generert JSON.</div>
-            </div>
-
-            <div style="height:12px"></div>
-            <div class="preview" id="builtWrap">
-              <h4>Built site (live preview)</h4>
-              <div style="color:var(--muted); font-weight:1000">Trykk “Build site” etter JSON er generert.</div>
-              <div id="builtSite" style="margin-top:12px"></div>
-            </div>
-
-            <div style="height:12px"></div>
-            <button class="btn btnPrimary btnWide" id="toKontaktFromAI">Bruk config → kontakt</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- REVIEWS -->
-    <section id="reviews">
-      <div class="wrap">
-        <div class="head">
-          <div>
-            <h2 class="reveal">Anmeldelser (swipe)</h2>
-            <p class="reveal" style="transition-delay:.06s">På telefon: sveip venstre/høyre.</p>
-          </div>
-        </div>
-
-        <div class="slider reveal" id="slider">
-          <div class="track" id="track">
-            <div class="slide">
-              <div>
-                <div class="quote">“Endelig en nettside som ser dyr ut, men var enkel å bestille. Flere henvendelser første uke.”</div>
-                <div class="who">— Lokal tjeneste, Østfold</div>
-              </div>
-              <div class="miniMock">
-                <div class="bar"></div>
-                <div class="pills"><i></i><i></i><i></i><i></i></div>
-              </div>
-            </div>
-
-            <div class="slide">
-              <div>
-                <div class="quote">“SoMe-malene gjorde at vi fikk et konsekvent uttrykk. Det ser profesjonelt ut.”</div>
-                <div class="who">— Butikk / service</div>
-              </div>
-              <div class="miniMock">
-                <div class="bar"></div>
-                <div class="pills"><i></i><i></i><i></i></div>
-              </div>
-            </div>
-
-            <div class="slide">
-              <div>
-                <div class="quote">“Strategien var kort og konkret. Vi visste nøyaktig hva vi skulle gjøre.”</div>
-                <div class="who">— Gründer, Norge</div>
-              </div>
-              <div class="miniMock">
-                <div class="bar"></div>
-                <div class="pills"><i></i><i></i><i></i><i></i><i></i></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="snav">
-            <div class="sdots" id="sdots">
-              <button class="active" data-i="0" aria-label="1"></button>
-              <button data-i="1" aria-label="2"></button>
-              <button data-i="2" aria-label="3"></button>
-            </div>
-            <div class="ar">
-              <button class="btn btnIcon" id="prev" aria-label="Prev">←</button>
-              <button class="btn btnIcon" id="next" aria-label="Next">→</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- CONTACT -->
-    <section id="kontakt">
-      <div class="wrap">
-        <div class="head">
-          <div>
-            <h2 class="reveal">Kontakt</h2>
-            <p class="reveal" style="transition-delay:.06s">Send kort brief. Vi svarer med forslag, pris og tidslinje.</p>
-          </div>
-        </div>
-
-        <div class="contact">
-          <div class="box reveal">
-            <b style="font-size:14px">Rask brief</b>
-            <div class="list" style="margin-top:10px">
-              1) Hva selger du?<br/>
-              2) By/område?<br/>
-              3) Ønsket stil (clean/premium)?<br/>
-              4) Har du logo/bilder?
-            </div>
-            <div style="height:12px"></div>
-            <button class="btn btnPrimary btnWide" id="openBrief5">Start med AI-brief</button>
-          </div>
-
-          <form class="box form reveal" id="form" novalidate style="transition-delay:.06s">
-            <label for="name">Navn</label>
-            <input id="name" required placeholder="Navn"/>
-
-            <label for="email">E-post</label>
-            <input id="email" type="email" required placeholder="navn@firma.no"/>
-
-            <label for="msg">Melding</label>
-            <textarea id="msg" required placeholder="Kort om hva du trenger..."></textarea>
-
-            <div class="err" id="err">Sjekk feltene (navn, e-post, melding).</div>
-
-            <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap">
-              <button class="btn btnPrimary" type="submit">Send</button>
-              <button class="btn" type="button" id="prefill">Eksempel</button>
+            <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center">
+              <button class="btn btn-primary" type="submit">Få gratis vurdering</button>
+              <span id="status" class="note"></span>
             </div>
           </form>
-        </div>
-      </div>
-    </section>
+        </section>
+      </main>
 
-    <footer>
-      <div class="wrap row">
-        <div>© <span id="year"></span> Markedsutvikler</div>
-        <div style="display:flex; gap:14px; flex-wrap:wrap">
+      <!-- FOOTER -->
+      <footer class="footer">
+        <div><strong style="color:rgba(11,42,60,.88)">MARKEDSUTVIKLER</strong> © <span id="year"></span></div>
+        <div class="foot-links">
           <a href="#tjenester">Tjenester</a>
-          <a href="#portfolio">Portfolio</a>
-          <a href="#builder">Bygg pakke</a>
-          <a href="#ai">AI-brief</a>
+          <a href="#demo">Demo</a>
+          <a href="#priser">Priser</a>
           <a href="#kontakt">Kontakt</a>
         </div>
-      </div>
-    </footer>
-  </main>
+      </footer>
 
-  <!-- Bottom CTA (mobile) -->
-  <div class="bottomCta" id="bottomCta" aria-hidden="false">
-    <div class="grow">
-      <small><b>Markedsutvikler</b><br/>Start med AI-brief → JSON</small>
     </div>
-    <button class="btn btnPrimary" id="bottomBrief">AI-brief</button>
-    <button class="btn" id="bottomKontakt">Kontakt</button>
   </div>
 
-  <div class="toast" id="toast">OK</div>
-
   <script>
-    // Utils
-    const $ = (q, el=document)=> el.querySelector(q);
-    const $$ = (q, el=document)=> Array.from(el.querySelectorAll(q));
-    const fmt = (n)=> n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-    const isTouch = matchMedia('(pointer: coarse)').matches;
-
     // Year
-    $("#year").textContent = new Date().getFullYear();
+    document.getElementById("year").textContent = new Date().getFullYear();
 
-    // Reveal
-    const io = new IntersectionObserver((entries)=>{
-      entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('on'); });
-    }, {threshold:.14});
-    $$(".reveal").forEach(el=>io.observe(el));
+    // Scroll reveal (subtle)
+    const els = document.querySelectorAll(".reveal");
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) if (e.isIntersecting) e.target.classList.add("in");
+    }, { threshold: 0.12 });
+    els.forEach(el => io.observe(el));
 
-    // Toast
-    const toast = $("#toast");
-    let tmr=null;
-    function pop(text){
-      toast.textContent = text;
-      toast.style.display='block';
-      clearTimeout(tmr);
-      tmr=setTimeout(()=>toast.style.display='none', 2200);
+    // Demo submit (replace with Vercel API later)
+    function handleSubmit(ev){
+      ev.preventDefault();
+      const s = document.getElementById("status");
+      s.textContent = "Sendt ✅ (koble til backend senere)";
+      ev.target.reset();
+      return false;
     }
-
-    // Theme (persist)
-    const themeBtn = $("#themeBtn");
-    const saved = localStorage.getItem('mu_theme');
-    if(saved) document.documentElement.setAttribute('data-theme', saved);
-    function updateIcon(){
-      const dark = document.documentElement.getAttribute('data-theme') === 'dark';
-      themeBtn.textContent = dark ? '☀️' : '🌙';
-    }
-    updateIcon();
-    themeBtn.addEventListener('click', ()=>{
-      const dark = document.documentElement.getAttribute('data-theme') === 'dark';
-      const next = dark ? '' : 'dark';
-      if(next) document.documentElement.setAttribute('data-theme', next);
-      else document.documentElement.removeAttribute('data-theme');
-      localStorage.setItem('mu_theme', next);
-      updateIcon();
-      pop(next ? 'Dark mode' : 'Light mode');
-    });
-
-    // Drawer
-    const drawer = $("#drawer");
-    $("#openDrawer").addEventListener('click', ()=>{ drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); });
-    $("#closeDrawer").addEventListener('click', ()=>{ drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); });
-    drawer.addEventListener('click',(e)=>{ if(e.target===drawer) $("#closeDrawer").click(); });
-    drawer.querySelectorAll('[data-close]').forEach(a=> a.addEventListener('click', ()=>$("#closeDrawer").click()));
-
-    // Sheen follow
-    $$("[data-sheen]").forEach(card=>{
-      card.addEventListener('mousemove',(e)=>{
-        const r = card.getBoundingClientRect();
-        const x = ((e.clientX - r.left)/r.width)*100;
-        const y = ((e.clientY - r.top)/r.height)*100;
-        card.style.setProperty('--mx', x+'%');
-        card.style.setProperty('--my', y+'%');
-      });
-    });
-
-    // 3D tilt: OFF on touch devices
-    const stage = $("#stage");
-    const dash = $("#dash");
-    if(!isTouch){
-      let raf=null, rx=0, ry=0;
-      function applyTilt(){
-        raf=null;
-        stage.style.transform = `perspective(1200px) rotateX(${rx}deg) rotateY(${ry}deg)`;
-        dash.style.transform = `translateZ(18px) rotateX(${rx*0.5}deg) rotateY(${ry*0.5}deg)`;
-      }
-      stage.addEventListener('mousemove',(e)=>{
-        const r = stage.getBoundingClientRect();
-        const x = (e.clientX - r.left)/r.width - .5;
-        const y = (e.clientY - r.top)/r.height - .5;
-        ry = (x * 10);
-        rx = (-y * 8);
-        if(!raf) raf = requestAnimationFrame(applyTilt);
-      });
-      stage.addEventListener('mouseleave',()=>{ rx=0; ry=0; applyTilt(); });
-    }
-
-    // Bottom CTA
-    $("#bottomBrief").addEventListener('click', ()=> openBriefModal());
-    $("#bottomKontakt").addEventListener('click', ()=> $("#kontakt").scrollIntoView({behavior:'smooth'}));
-
-    // Quick tour
-    $("#quickDemo").addEventListener('click', ()=>{
-      $("#portfolio").scrollIntoView({behavior:'smooth'});
-      setTimeout(()=>$("#builder").scrollIntoView({behavior:'smooth'}), 700);
-      setTimeout(()=>$("#ai").scrollIntoView({behavior:'smooth'}), 1400);
-      setTimeout(()=>$("#reviews").scrollIntoView({behavior:'smooth'}), 2100);
-      setTimeout(()=>$("#kontakt").scrollIntoView({behavior:'smooth'}), 2800);
-      pop('WOW tour ✔');
-    });
-    $("#goKontakt").addEventListener('click', ()=>$("#kontakt").scrollIntoView({behavior:'smooth'}));
-    $("#toAISection").addEventListener('click', ()=>$("#ai").scrollIntoView({behavior:'smooth'}));
-
-    // Portfolio filter
-    const filters = $("#filters");
-    const works = $$(".work");
-    filters.addEventListener('click',(e)=>{
-      const btn = e.target.closest('button[data-filter]');
-      if(!btn) return;
-      filters.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      const f = btn.dataset.filter;
-      works.forEach(w=>{
-        const show = (f==='all') || (w.dataset.type===f);
-        w.style.display = show ? '' : 'none';
-      });
-      pop('Filter: ' + btn.textContent);
-    });
-
-    // Case data + modal
-    const CASES = {
-      case1:{
-        title:"Lokal tjeneste — “Book nå”",
-        subtitle:"Nettside • Konvertering • 7 dager",
-        task:"Kunden trengte en enkel nettside som ga henvendelser. Målet: flere bookinger og tydelig pris/tilbud.",
-        solution:"Landing med sterk hero, 3 tjenester, prispakker, galleri og FAQ. CTA i hero + sticky knapp.",
-        result:"Tydeligere tilbud + bedre flyt. Flere relevante henvendelser etter lansering (demo).",
-        metrics:[{v:"+37%",t:"flere henvendelser"},{v:"<2s",t:"sidehastighet (mål)"},{v:"7",t:"dager levering"}]
-      },
-      case2:{
-        title:"SoMe system — 15 maler",
-        subtitle:"SoMe • Designsystem • 48 timer",
-        task:"Profilen så ujevn ut. Målet: konsistent uttrykk og raskere posting.",
-        solution:"15 maler (post/story), bio/tekststruktur og highlights-stil som matcher nettsiden.",
-        result:"Raskere produksjon + mer profesjonell feed (demo).",
-        metrics:[{v:"15",t:"maler"},{v:"48t",t:"levering"},{v:"1",t:"stil-system"}]
-      },
-      case3:{
-        title:"Plan på 1 side",
-        subtitle:"Strategi • Fokus • Utførbart",
-        task:"Mange ideer, ingen plan. Målet: enkel strategi som faktisk blir gjennomført.",
-        solution:"Målgruppe, budskap, 2 kanaler og ukentlig plan + tilbudsstruktur.",
-        result:"Klar retning og start samme uke (demo).",
-        metrics:[{v:"2",t:"kanaler fokus"},{v:"1",t:"side plan"},{v:"4",t:"ukers kickoff"}]
-      }
-    };
-
-    const caseOverlay = $("#caseOverlay");
-    function openCase(key){
-      const c = CASES[key]; if(!c) return;
-      $("#caseTitle").textContent = c.title;
-      $("#caseSubtitle").textContent = c.subtitle;
-      $("#caseTask").textContent = c.task;
-      $("#caseSolution").textContent = c.solution;
-      $("#caseResult").textContent = c.result;
-      $("#caseMetrics").innerHTML = c.metrics.map(m=>`
-        <div class="metric"><b>${m.v}</b><span>${m.t}</span></div>
-      `).join('');
-      caseOverlay.classList.add('open');
-      caseOverlay.setAttribute('aria-hidden','false');
-      document.body.style.overflow='hidden';
-    }
-    function closeCaseModal(){
-      caseOverlay.classList.remove('open');
-      caseOverlay.setAttribute('aria-hidden','true');
-      document.body.style.overflow='';
-    }
-    $("#closeCase").addEventListener('click', closeCaseModal);
-    caseOverlay.addEventListener('click',(e)=>{ if(e.target===caseOverlay) closeCaseModal(); });
-    works.forEach(w=> w.addEventListener('click', ()=> openCase(w.dataset.case)));
-    $("#caseToBrief").addEventListener('click', ()=>{ closeCaseModal(); openBriefModal(); });
-    $("#caseToKontakt").addEventListener('click', ()=>{ closeCaseModal(); $("#kontakt").scrollIntoView({behavior:'smooth'}); });
-
-    // Builder
-    const opts = $$("#options .opt");
-    const totalEl = $("#total");
-    const chosenEl = $("#chosen");
-    function recalc(){
-      let sum=0, names=[];
-      opts.forEach(o=>{
-        if(o.classList.contains('on')){
-          sum += Number(o.dataset.price);
-          names.push('• ' + o.dataset.name);
-        }
-      });
-      totalEl.textContent = fmt(sum);
-      chosenEl.innerHTML = names.join('<br/>') || '• (ingen valg)';
-    }
-    opts.forEach((o,i)=>{
-      o.addEventListener('click', ()=>{
-        if(i===0) return;
-        o.classList.toggle('on');
-        recalc();
-        pop('Oppdatert pakke');
-      });
-    });
-    recalc();
-    $("#reset").addEventListener('click', ()=>{
-      opts.forEach((o,i)=> o.classList.toggle('on', i===0));
-      recalc();
-      pop('Reset ✔');
-    });
-    $("#builderToKontakt").addEventListener('click', ()=>{ $("#kontakt").scrollIntoView({behavior:'smooth'}); pop('Pakken er klar'); });
-
-    // Reviews slider + swipe
-    const track = $("#track");
-    const dots = $$("#sdots button");
-    let sIdx = 0;
-    function setSlide(i){
-      sIdx = (i + 3) % 3;
-      track.style.transform = `translateX(${-sIdx*100}%)`;
-      dots.forEach((d,j)=>d.classList.toggle('active', j===sIdx));
-    }
-    $("#prev").addEventListener('click', ()=>setSlide(sIdx-1));
-    $("#next").addEventListener('click', ()=>setSlide(sIdx+1));
-    dots.forEach(d=>d.addEventListener('click', ()=>setSlide(Number(d.dataset.i))));
-
-    const slider = $("#slider");
-    let startX=0, dx=0, dragging=false;
-    slider.addEventListener('pointerdown', (e)=>{
-      dragging=true; startX=e.clientX; dx=0;
-      slider.setPointerCapture(e.pointerId);
-    });
-    slider.addEventListener('pointermove', (e)=>{
-      if(!dragging) return;
-      dx = e.clientX - startX;
-      track.style.transition = 'none';
-      track.style.transform = `translateX(${(-sIdx*100)}%) translateX(${dx}px)`;
-    });
-    function endSwipe(){
-      if(!dragging) return;
-      dragging=false;
-      track.style.transition = '';
-      if(Math.abs(dx) > 60){
-        setSlide(dx<0 ? sIdx+1 : sIdx-1);
-      } else setSlide(sIdx);
-      dx=0;
-    }
-    slider.addEventListener('pointerup', endSwipe);
-    slider.addEventListener('pointercancel', endSwipe);
-    slider.addEventListener('pointerleave', endSwipe);
-
-    // Contact form
-    const form = $("#form");
-    const err = $("#err");
-    $("#prefill").addEventListener('click', ()=>{
-      $("#name").value='Ola Nordmann';
-      $("#email").value='ola@firma.no';
-      $("#msg").value='Hei! Jeg trenger nettside + priser + booking/CTA. Ønsker premium stil. Har logo.';
-      pop('Eksempel fylt');
-    });
-    form.addEventListener('submit',(e)=>{
-      e.preventDefault();
-      const name = $("#name").value.trim();
-      const email = $("#email").value.trim();
-      const msg = $("#msg").value.trim();
-      const ok = name && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && msg.length>8;
-      if(!ok){ err.style.display='block'; pop('Sjekk feltene'); return; }
-      err.style.display='none';
-      form.reset();
-      pop('Sendt (demo)');
-    });
-
-    // ======= REAL CONFIG GENERATOR (JSON) =======
-    const briefState = {
-      brand:"Markedsutvikler",
-      bransje:"",
-      by:"",
-      maal:"leads",
-      stil:"premium",
-      tilbud:"",
-      prisnivaa:"middels",
-      primarCTA:"booking",
-      tone:"tydelig",
-      innhold:"bilder+priser",
-      integrasjoner:"Google Reviews",
-      språk:"no",
-      ekstra:""
-    };
-
-    const steps = [
-      {key:"bransje", label:"Bransje", help:"Hva slags bedrift er dette?", type:"text", ph:"f.eks. bilpleie / frisør"},
-      {key:"by", label:"By/område", help:"Hvor er du? (for lokal SEO)", type:"text", ph:"f.eks. Halden / Østfold"},
-      {key:"maal", label:"Primært mål", help:"Hva er #1 mål?", type:"select", options:[
-        {v:"leads", t:"flere henvendelser"},
-        {v:"booking", t:"flere bookinger"},
-        {v:"sales", t:"flere salg"},
-        {v:"trust", t:"bedre omdømme"}
-      ]},
-      {key:"stil", label:"Stil", help:"Hvordan skal det føles?", type:"select", options:[
-        {v:"premium", t:"premium"},
-        {v:"clean", t:"clean"},
-        {v:"tech", t:"teknologisk"},
-        {v:"warm", t:"varm"}
-      ]},
-      {key:"tilbud", label:"Tilbud/pakker", help:"Hva selger du? (kort)", type:"textarea", ph:"f.eks. utvendig vask + polering"},
-      {key:"prisnivaa", label:"Prisnivå", help:"Hvordan er prisnivået?", type:"select", options:[
-        {v:"lavt", t:"lavt"},
-        {v:"middels", t:"middels"},
-        {v:"høyt", t:"høyt"}
-      ]},
-      {key:"primarCTA", label:"Primær CTA", help:"Hva skal brukeren gjøre?", type:"select", options:[
-        {v:"booking", t:"Bestill time"},
-        {v:"call", t:"Ring oss"},
-        {v:"quote", t:"Få tilbud"},
-        {v:"visit", t:"Finn oss"}
-      ]},
-      {key:"tone", label:"Tone of voice", help:"Hvordan skal teksten være?", type:"select", options:[
-        {v:"tydelig", t:"tydelig"},
-        {v:"vennlig", t:"vennlig"},
-        {v:"direkte", t:"direkte"},
-        {v:"eksklusiv", t:"eksklusiv"}
-      ]},
-      {key:"innhold", label:"Innhold", help:"Hva vil du vise mest?", type:"select", options:[
-        {v:"bilder+priser", t:"bilder + priser"},
-        {v:"før-etter", t:"før/etter"},
-        {v:"case+reviews", t:"case + anmeldelser"},
-        {v:"tjenester+faq", t:"tjenester + FAQ"}
-      ]},
-      {key:"integrasjoner", label:"Integrasjoner", help:"Hva skal kobles på? (kun navn, uten keys)", type:"text", ph:"f.eks. Google Reviews, Vipps, Booking, Meta Pixel"}
-    ];
-
-    function ctaText(cta){
-      if(cta==="booking") return "Bestill time";
-      if(cta==="call") return "Ring oss";
-      if(cta==="quote") return "Få tilbud";
-      if(cta==="visit") return "Finn oss";
-      return "Kontakt";
-    }
-    function seoTitle(s){
-      const br = s.bransje ? s.bransje : "Tjenester";
-      const loc = s.by ? (" i " + s.by) : " i Norge";
-      return `${br}${loc} — ${s.brand}`;
-    }
-    function seoDesc(s){
-      const br = s.bransje ? s.bransje : "Små bedrifter";
-      const loc = s.by ? s.by : "Norge";
-      const cta = ctaText(s.primarCTA);
-      return `${s.brand} hjelper med nettsider, SoMe og strategi for ${br} i ${loc}. ${cta} – rask levering og fast pris.`;
-    }
-
-    function buildConfig(s){
-      const cta = ctaText(s.primarCTA);
-      const goalMap = {leads:"leads", booking:"bookings", sales:"sales", trust:"trust"};
-      const toneHints = {
-        tydelig:["Korte setninger","Tydelige knapper","Fokus på verdi"],
-        vennlig:["Varmt språk","Lav terskel","Hjelpsomt"],
-        direkte:["Rett på sak","Tall/tilbud","Sterk CTA"],
-        eksklusiv:["Premium ordvalg","Kvalitet","Trygghet"]
-      };
-
-      const socialProofBlock =
-        s.innhold==="før-etter" ? {id:"beforeAfter", type:"before_after", title:"Før / Etter", note:"Vis resultat visuelt", enabled:true} :
-        s.innhold==="case+reviews" ? {id:"cases", type:"case_grid", title:"Case", note:"3–6 case-kort", enabled:true} :
-        {id:"reviews", type:"reviews", title:"Anmeldelser", note:"Google/FB reviews", enabled:true};
-
-      const pricingBlock =
-        (s.prisnivaa==="høyt")
-          ? {id:"packages", type:"pricing", title:"Pakker", style:"premium", note:"3 pakker med verdi-argumenter", enabled:true}
-          : {id:"packages", type:"pricing", title:"Pakker", style:"simple", note:"3 pakker, enkel sammenligning", enabled:true};
-
-      const integrations = s.integrasjoner.split(",").map(x=>x.trim()).filter(Boolean);
-
-      const pages = [
-        {
-          slug:"/",
-          name:"Home",
-          seo:{
-            title: seoTitle(s),
-            description: seoDesc(s),
-            locale: s.språk,
-            canonical: "/"
-          },
-          layout:{
-            header:{sticky:true, items:["Tjenester","Portfolio","Priser","Kontakt"]},
-            footer:{items:["Tjenester","Kontakt"], copyright:`© ${new Date().getFullYear()} ${s.brand}`}
-          },
-          sections:[
-            {id:"hero", type:"hero", title:`${s.bransje ? (s.bransje.charAt(0).toUpperCase()+s.bransje.slice(1)) : "Nettsider"} som ser premium ut`, subtitle:`${s.brand} — ${s.tone}. Rask levering. Fast pris.`, primaryCta:{label:cta, action:"open_contact"}, secondaryCta:{label:"Se priser", action:"scroll_packages"}, enabled:true},
-            {id:"services", type:"services", title:"Tjenester", items:[
-              {title:"Nettsider", desc:"Landing eller flere sider. Mobil først. Klar struktur."},
-              {title:"Sosiale medier", desc:"Profiler + maler + innholdsplan i samme stil."},
-              {title:"Strategi", desc:"Målgruppe, budskap, kanaler og enkel plan."}
-            ], enabled:true},
-            pricingBlock,
-            socialProofBlock,
-            {id:"process", type:"process", title:"Hvordan vi jobber", steps:[
-              {t:"Brief", d:"10 spørsmål → tydelig scope"},
-              {t:"Design", d:"1 versjon → 1 runde endringer"},
-              {t:"Levering", d:"Publisering + små justeringer"}
-            ], enabled:true},
-            {id:"faq", type:"faq", title:"FAQ", items:[
-              {q:"Hvor rask levering?", a:"Typisk 3–10 dager, avhengig av innhold og scope."},
-              {q:"Hva trenger dere fra meg?", a:"Logo, 5–10 bilder (om mulig) og priser/pakker."},
-              {q:"Kan dette skaleres senere?", a:"Ja, bygget med komponenter og klar struktur."}
-            ], enabled:true},
-            {id:"contact", type:"contact", title:"Kontakt", channels:["email","phone","form"], formFields:["name","email","message"], enabled:true}
-          ]
-        }
-      ];
-
-      const platform = {
-        mode:"config-driven",
-        version:"1.0",
-        agents:{
-          copyAgent:{enabled:true, purpose:"Generate copy variants per section"},
-          seoAgent:{enabled:true, purpose:"Generate SEO title/desc + keywords"},
-          layoutAgent:{enabled:true, purpose:"Choose section order based on goal"}
-        }
-      };
-
-      const analytics = {
-        events:[
-          {name:"cta_click", props:["cta_label","section_id"]},
-          {name:"form_submit", props:["source","page"]},
-          {name:"scroll_depth", props:["percent"]}
-        ],
-        pixels: integrations.filter(x=>/pixel|meta|fb/i.test(x))
-      };
-
-      return {
-        schema:"MU_CONFIG",
-        generatedAt: new Date().toISOString(),
-        brand:{
-          name:s.brand,
-          industry:s.bransje || "general",
-          location:s.by || "Norway",
-          language:s.språk,
-          tone:s.tone,
-          goals:[goalMap[s.maal] || "leads"],
-          offer:s.tilbud || "",
-          pricingLevel:s.prisnivaa
-        },
-        theme:{
-          style:s.stil,
-          tokens:{
-            accentA:"--a",
-            accentB:"--b",
-            background:"--bg",
-            text:"--ink"
-          }
-        },
-        cta:{
-          primary: {label: cta, action:"open_contact"},
-          secondary:{label:"Se priser", action:"scroll_packages"}
-        },
-        contentHints:{
-          focus:s.innhold,
-          toneGuidelines: toneHints[s.tone] || toneHints.tydelig
-        },
-        integrations:{
-          requested: integrations.length ? integrations : ["Google Reviews"],
-          notes:"Real integrations handled by platform connectors. No keys in config."
-        },
-        pages,
-        platform,
-        analytics
-      };
-    }
-
-    function renderPreviewFromConfig(cfg){
-      const pv = $("#preview");
-      const home = (cfg.pages || []).find(p=>p.slug==="/");
-      if(!home){
-        pv.innerHTML = "<h4>Preview wireframe</h4><div style='color:var(--muted); font-weight:1000'>Ingen Home-side i config.</div>";
-        return;
-      }
-      const secs = home.sections || [];
-      pv.innerHTML = `
-        <h4>Preview wireframe</h4>
-        <div style="color:var(--muted); font-weight:1000">Side: <b>${home.name}</b> • Goal: <b>${(cfg.brand?.goals||[]).join(", ")}</b> • CTA: <b>${cfg.cta?.primary?.label||"—"}</b></div>
-        ${secs.filter(s=>s.enabled).map(s=>`
-          <div class="wire">
-            <b>${(s.type||"").toUpperCase()} — ${(s.title || s.id)}</b>
-            <small>${s.note || ""}${s.items ? (" • items: " + s.items.length) : ""}${s.steps ? (" • steps: " + s.steps.length) : ""}</small>
-          </div>
-        `).join("")}
-      `;
-    }
-
-    // Brief UI renderer
-    function renderBrief(mountEl){
-      let step = 0;
-      mountEl.innerHTML = `
-        <b style="font-size:14px">Spørsmål <span id="stepN">1</span>/10</b>
-        <div class="steps" id="dots"></div>
-
-        <div style="margin-top:12px">
-          <div class="qTitle" id="qTitle"></div>
-          <p class="qHelp" id="qHelp"></p>
-
-          <div class="qControls" id="qCtrl"></div>
-
-          <div class="qRow">
-            <button class="btn btnSmall" id="prevQ">Tilbake</button>
-            <button class="btn btnPrimary btnSmall" id="nextQ">Neste</button>
-            <button class="btn btnPrimary btnSmall" id="finishQ">Generer JSON</button>
-            <button class="btn btnSmall" id="resetQ">Reset</button>
-          </div>
-
-          <div style="height:12px"></div>
-          <div style="color:var(--muted); font-weight:1000">
-            Tips: Integrasjoner = kun navn (Vipps/Booking/Meta Pixel), uten keys/IDs.
-          </div>
-        </div>
-      `;
-
-      const dots = $("#dots", mountEl);
-      const stepN = $("#stepN", mountEl);
-      const qTitle = $("#qTitle", mountEl);
-      const qHelp  = $("#qHelp", mountEl);
-      const qCtrl  = $("#qCtrl", mountEl);
-      const prevQ  = $("#prevQ", mountEl);
-      const nextQ  = $("#nextQ", mountEl);
-      const finishQ= $("#finishQ", mountEl);
-      const resetQ = $("#resetQ", mountEl);
-
-      function paintDots(){
-        dots.innerHTML = steps.map((_,i)=> `<span class="stepDot ${i<=step ? 'on':''}"></span>`).join('');
-      }
-
-      function paint(){
-        const s = steps[step];
-        stepN.textContent = String(step+1);
-        qTitle.textContent = s.label;
-        qHelp.textContent = s.help;
-
-        if(s.type==="text"){
-          qCtrl.innerHTML = `<input id="inp" placeholder="${s.ph||''}" value="${briefState[s.key]||''}">`;
-          $("#inp", qCtrl).addEventListener('input',(e)=> briefState[s.key]=e.target.value);
-        } else if(s.type==="textarea"){
-          qCtrl.innerHTML = `<textarea id="ta" placeholder="${s.ph||''}">${briefState[s.key]||''}</textarea>`;
-          $("#ta", qCtrl).addEventListener('input',(e)=> briefState[s.key]=e.target.value);
-        } else {
-          qCtrl.innerHTML = `
-            <select id="sel">
-              ${s.options.map(o=>`<option value="${o.v}" ${briefState[s.key]===o.v?'selected':''}>${o.t}</option>`).join('')}
-            </select>`;
-          $("#sel", qCtrl).addEventListener('change',(e)=> briefState[s.key]=e.target.value);
-        }
-
-        prevQ.disabled = step===0;
-        nextQ.classList.toggle('hide', step===steps.length-1);
-        paintDots();
-      }
-
-      prevQ.addEventListener('click', ()=>{ if(step>0){ step--; paint(); } });
-      nextQ.addEventListener('click', ()=>{ if(step<steps.length-1){ step++; paint(); } });
-
-      finishQ.addEventListener('click', ()=>{
-        const cfg = buildConfig(briefState);
-        const json = JSON.stringify(cfg, null, 2);
-        $("#aiOut").textContent = json;
-        pop('JSON klar ✔');
-        renderPreviewFromConfig(cfg);
-      });
-
-      resetQ.addEventListener('click', ()=>{
-        Object.keys(briefState).forEach(k=> briefState[k]="");
-        briefState.brand="Markedsutvikler";
-        briefState.maal="leads";
-        briefState.stil="premium";
-        briefState.prisnivaa="middels";
-        briefState.primarCTA="booking";
-        briefState.tone="tydelig";
-        briefState.innhold="bilder+priser";
-        briefState.integrasjoner="Google Reviews";
-        briefState.språk="no";
-        step=0;
-        paint();
-        $("#aiOut").textContent = "Fyll ut briefen til venstre. Output vises her.";
-        $("#preview").innerHTML = `<h4>Preview wireframe</h4><div style="color:var(--muted); font-weight:1000">Trykk “Render preview” etter du har generert JSON.</div>`;
-        $("#builtSite").innerHTML = "";
-        window.__BUILT_HTML__ = "";
-        pop('Reset brief');
-      });
-
-      paint();
-    }
-
-    // Mount brief in section
-    renderBrief($("#aiLeft"));
-
-    // Copy JSON
-    $("#copyOut").addEventListener('click', async ()=>{
-      const txt = $("#aiOut").textContent.trim();
-      if(!txt.startsWith("{")) { pop("Ingen JSON ennå"); return; }
-      try{
-        await navigator.clipboard.writeText(txt);
-        pop('Kopiert ✔');
-      }catch{
-        pop('iOS: marker og kopier manuelt');
-      }
-    });
-
-    // Download JSON
-    $("#downloadJson").addEventListener('click', ()=>{
-      const txt = $("#aiOut").textContent.trim();
-      if(!txt.startsWith("{")) { pop("Ingen JSON ennå"); return; }
-      const blob = new Blob([txt], {type:"application/json"});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "MU_CONFIG.json";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-      pop("Lastet ned MU_CONFIG.json");
-    });
-
-    // Render preview from JSON box
-    $("#renderPreview").addEventListener('click', ()=>{
-      const txt = $("#aiOut").textContent.trim();
-      if(!txt.startsWith("{")) { pop("Ingen JSON ennå"); return; }
-      try{
-        const cfg = JSON.parse(txt);
-        renderPreviewFromConfig(cfg);
-        pop("Preview render ✔");
-      }catch{
-        pop("JSON feil (kan ikke parse)");
-      }
-    });
-
-    // Use config -> contact
-    $("#toKontaktFromAI").addEventListener('click', ()=>{
-      const txt = $("#aiOut").textContent.trim();
-      if(!txt.startsWith("{")) { pop("Generer JSON først"); return; }
-      $("#msg").value = txt.slice(0, 1600);
-      $("#kontakt").scrollIntoView({behavior:'smooth'});
-      pop("Limt inn i melding");
-    });
-
-    // Builder -> brief extras
-    $("#builderToBrief").addEventListener('click', ()=>{
-      const chosen = opts.filter(o=>o.classList.contains('on')).map(o=>o.dataset.name);
-      briefState.ekstra = chosen.join(", ");
-      if(chosen.length){
-        briefState.integrasjoner = (briefState.integrasjoner || "Google Reviews") + ", " + chosen.join(", ");
-      }
-      $("#ai").scrollIntoView({behavior:'smooth'});
-      pop("Sendt til brief");
-    });
-
-    // Brief modal
-    const briefOverlay = $("#briefOverlay");
-    const mount = $("#briefMount");
-    let mountedOnce = false;
-
-    function openBriefModal(){
-      briefOverlay.classList.add('open');
-      briefOverlay.setAttribute('aria-hidden','false');
-      document.body.style.overflow='hidden';
-      if(!mountedOnce){
-        renderBrief(mount);
-        mountedOnce = true;
-      }
-      pop("AI-brief åpnet");
-    }
-    function closeBriefModal(){
-      briefOverlay.classList.remove('open');
-      briefOverlay.setAttribute('aria-hidden','true');
-      document.body.style.overflow='';
-    }
-    $("#closeBrief").addEventListener('click', closeBriefModal);
-    briefOverlay.addEventListener('click',(e)=>{ if(e.target===briefOverlay) closeBriefModal(); });
-
-    $("#openBrief").addEventListener('click', openBriefModal);
-    $("#openBrief2").addEventListener('click', ()=>{ $("#closeDrawer").click(); openBriefModal(); });
-    $("#openBrief3").addEventListener('click', openBriefModal);
-    $("#openBrief4").addEventListener('click', openBriefModal);
-    $("#openBrief5").addEventListener('click', openBriefModal);
-    $("#openBriefInline").addEventListener('click', openBriefModal);
-
-    // ESC for modals
-    window.addEventListener('keydown',(e)=>{
-      if(e.key==="Escape"){
-        if(caseOverlay.classList.contains('open')) closeCaseModal();
-        if(briefOverlay.classList.contains('open')) closeBriefModal();
-      }
-    });
-
-    // ===== Build Site from MU_CONFIG.json (safe) =====
-    function esc(s=""){ return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-
-    function sectionHTML(sec, cfg){
-      const cta = cfg?.cta?.primary?.label || "Kontakt";
-      const secondary = cfg?.cta?.secondary?.label || "Se priser";
-      const isMobile = matchMedia('(max-width: 980px)').matches;
-
-      switch(sec.type){
-        case "hero":
-          return `
-            <section style="padding:34px 0">
-              <div style="display:grid; gap:12px">
-                <div style="display:inline-flex; gap:10px; align-items:center; padding:10px 12px; border:1px solid var(--stroke); border-radius:999px; background:var(--panel2); width:fit-content">
-                  <span style="width:10px;height:10px;border-radius:999px;background:linear-gradient(135deg,var(--a),var(--b));display:inline-block"></span>
-                  <b style="font-size:12px">Fast pris • Rask levering • Premium</b>
-                </div>
-                <h1 style="margin:0; font-size:clamp(34px,5vw,56px); letter-spacing:-.03em; line-height:1.05">${esc(sec.title||"")}</h1>
-                <p style="margin:0; color:var(--muted); font-weight:900; font-size:16px; line-height:1.55">${esc(sec.subtitle||"")}</p>
-                <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px">
-                  <a href="#contact" class="btn btnPrimary">${esc(sec.primaryCta?.label || cta)}</a>
-                  <a href="#packages" class="btn">${esc(sec.secondaryCta?.label || secondary)}</a>
-                </div>
-              </div>
-            </section>
-          `;
-
-        case "services":
-          return `
-            <section style="padding:26px 0">
-              <h2 style="margin:0 0 12px; font-size:24px; letter-spacing:-.02em">${esc(sec.title||"Tjenester")}</h2>
-              <div style="display:grid; grid-template-columns:${isMobile ? '1fr' : 'repeat(3,1fr)'}; gap:12px">
-                ${(sec.items||[]).map(it=>`
-                  <div style="border:1px solid var(--stroke); background:var(--panel); border-radius:18px; padding:14px; box-shadow:var(--shadow2)">
-                    <b>${esc(it.title||"")}</b>
-                    <div style="margin-top:8px; color:var(--muted); font-weight:900; line-height:1.45">${esc(it.desc||"")}</div>
-                  </div>
-                `).join("")}
-              </div>
-            </section>
-          `;
-
-        case "pricing":
-          return `
-            <section id="packages" style="padding:26px 0">
-              <h2 style="margin:0 0 12px; font-size:24px; letter-spacing:-.02em">${esc(sec.title||"Pakker")}</h2>
-              <div style="display:grid; grid-template-columns:${isMobile ? '1fr' : 'repeat(3,1fr)'}; gap:12px">
-                ${["Start","Standard","Pro"].map((name)=>`
-                  <div style="border:1px solid var(--stroke); background:var(--panel); border-radius:18px; padding:14px; box-shadow:var(--shadow2)">
-                    <b>${name}</b>
-                    <div style="margin-top:8px; color:var(--muted); font-weight:900">Pris: ${esc(sec.style==="premium" ? "fra 19 900" : "fra 9 900")} NOK</div>
-                    <div style="margin-top:10px; color:var(--muted); font-weight:900; line-height:1.55">
-                      • Struktur som konverterer<br/>• Mobil først<br/>• Tydelig CTA
-                    </div>
-                    <div style="margin-top:12px">
-                      <a class="btn btnPrimary" href="#contact">${esc(cfg?.cta?.primary?.label || "Kontakt")}</a>
-                    </div>
-                  </div>
-                `).join("")}
-              </div>
-            </section>
-          `;
-
-        case "reviews":
-          return `
-            <section style="padding:26px 0">
-              <h2 style="margin:0 0 12px; font-size:24px; letter-spacing:-.02em">${esc(sec.title||"Anmeldelser")}</h2>
-              <div style="display:grid; gap:10px">
-                ${["“Proft og raskt.”","“Klar struktur. Flere henvendelser.”","“Premium uttrykk.”"].map(q=>`
-                  <div style="border:1px solid var(--stroke); background:var(--panel); border-radius:18px; padding:14px; box-shadow:var(--shadow2)">
-                    <b style="display:block">${q}</b>
-                    <div style="margin-top:8px; color:var(--muted); font-weight:900">— Kunde (demo)</div>
-                  </div>
-                `).join("")}
-              </div>
-            </section>
-          `;
-
-        case "before_after":
-          return `
-            <section style="padding:26px 0">
-              <h2 style="margin:0 0 12px; font-size:24px; letter-spacing:-.02em">${esc(sec.title||"Før / Etter")}</h2>
-              <div style="display:grid; grid-template-columns:${isMobile ? '1fr' : '1fr 1fr'}; gap:12px">
-                <div style="border:1px solid var(--stroke); background:var(--panel); border-radius:18px; padding:14px; box-shadow:var(--shadow2)">
-                  <b>Før</b><div style="margin-top:10px; height:160px; border-radius:14px; background:color-mix(in srgb, var(--panel2) 80%, transparent); border:1px solid var(--stroke)"></div>
-                </div>
-                <div style="border:1px solid var(--stroke); background:var(--panel); border-radius:18px; padding:14px; box-shadow:var(--shadow2)">
-                  <b>Etter</b><div style="margin-top:10px; height:160px; border-radius:14px; background:radial-gradient(600px 220px at 20% 20%, rgba(44,166,164,.22), transparent 60%), color-mix(in srgb, var(--panel2) 80%, transparent); border:1px solid var(--stroke)"></div>
-                </div>
-              </div>
-            </section>
-          `;
-
-        case "case_grid":
-          return `
-            <section style="padding:26px 0">
-              <h2 style="margin:0 0 12px; font-size:24px; letter-spacing:-.02em">${esc(sec.title||"Case")}</h2>
-              <div style="display:grid; grid-template-columns:${isMobile ? '1fr' : 'repeat(3,1fr)'}; gap:12px">
-                ${[1,2,3].map(i=>`
-                  <div style="border:1px solid var(--stroke); background:var(--panel); border-radius:18px; padding:14px; box-shadow:var(--shadow2)">
-                    <b>Case ${i}</b>
-                    <div style="margin-top:8px; color:var(--muted); font-weight:900; line-height:1.45">Kort oppsummering + resultat (demo).</div>
-                  </div>
-                `).join("")}
-              </div>
-            </section>
-          `;
-
-        case "process":
-          return `
-            <section style="padding:26px 0">
-              <h2 style="margin:0 0 12px; font-size:24px; letter-spacing:-.02em">${esc(sec.title||"Prosess")}</h2>
-              <div style="display:grid; grid-template-columns:${isMobile ? '1fr' : 'repeat(3,1fr)'}; gap:12px">
-                ${(sec.steps||[]).map(st=>`
-                  <div style="border:1px solid var(--stroke); background:var(--panel); border-radius:18px; padding:14px; box-shadow:var(--shadow2)">
-                    <b>${esc(st.t||"")}</b>
-                    <div style="margin-top:8px; color:var(--muted); font-weight:900; line-height:1.45">${esc(st.d||"")}</div>
-                  </div>
-                `).join("")}
-              </div>
-            </section>
-          `;
-
-        case "faq":
-          return `
-            <section style="padding:26px 0">
-              <h2 style="margin:0 0 12px; font-size:24px; letter-spacing:-.02em">${esc(sec.title||"FAQ")}</h2>
-              <div style="display:grid; gap:10px">
-                ${(sec.items||[]).map(it=>`
-                  <details style="border:1px solid var(--stroke); background:var(--panel); border-radius:18px; padding:12px; box-shadow:var(--shadow2)">
-                    <summary style="cursor:pointer; font-weight:1100">${esc(it.q||"")}</summary>
-                    <div style="margin-top:10px; color:var(--muted); font-weight:900; line-height:1.55">${esc(it.a||"")}</div>
-                  </details>
-                `).join("")}
-              </div>
-            </section>
-          `;
-
-        case "contact":
-          return `
-            <section id="contact" style="padding:26px 0">
-              <h2 style="margin:0 0 12px; font-size:24px; letter-spacing:-.02em">${esc(sec.title||"Kontakt")}</h2>
-              <div style="display:grid; grid-template-columns:${isMobile ? '1fr' : '1fr 1fr'}; gap:12px">
-                <div style="border:1px solid var(--stroke); background:var(--panel); border-radius:18px; padding:14px; box-shadow:var(--shadow2)">
-                  <b>Rask kontakt</b>
-                  <div style="margin-top:8px; color:var(--muted); font-weight:900; line-height:1.55">
-                    • E-post / Telefon<br/>• Svar innen 24t (mål)
-                  </div>
-                </div>
-                <div style="border:1px solid var(--stroke); background:var(--panel); border-radius:18px; padding:14px; box-shadow:var(--shadow2)">
-                  <b>Skjema</b>
-                  <div style="margin-top:10px; display:grid; gap:10px">
-                    <input placeholder="Navn" style="padding:12px;border-radius:14px;border:1px solid var(--stroke);background:var(--panel2);font-weight:900"/>
-                    <input placeholder="E-post" style="padding:12px;border-radius:14px;border:1px solid var(--stroke);background:var(--panel2);font-weight:900"/>
-                    <textarea placeholder="Melding" style="padding:12px;border-radius:14px;border:1px solid var(--stroke);background:var(--panel2);font-weight:900;min-height:90px"></textarea>
-                    <button class="btn btnPrimary">${esc(cfg?.cta?.primary?.label || "Send")}</button>
-                  </div>
-                </div>
-              </div>
-            </section>
-          `;
-
-        default:
-          return "";
-      }
-    }
-
-    function buildStandaloneHTML(cfg){
-      const home = (cfg.pages || []).find(p=>p.slug==="/");
-      const title = home?.seo?.title || (cfg.brand?.name || "Website");
-      const desc  = home?.seo?.description || "";
-      const sections = (home?.sections || []).filter(s=>s.enabled).map(s=>sectionHTML(s, cfg)).join("\n");
-
-      const css = `
-      :root{
-        --bg:#f6f8f9; --panel:rgba(255,255,255,.78); --panel2:rgba(255,255,255,.60);
-        --stroke:rgba(10,28,40,.10); --ink:#071a24; --muted:rgba(7,26,36,.68);
-        --a:#1F6F8B; --b:#2CA6A4; --shadow2: 0 14px 40px rgba(2,16,28,.10);
-      }
-      *{box-sizing:border-box}
-      body{
-        margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial;
-        background:
-          radial-gradient(1200px 700px at 10% -10%, rgba(44,166,164,.22), transparent 55%),
-          radial-gradient(900px 600px at 90% 10%, rgba(31,111,139,.18), transparent 55%),
-          var(--bg);
-        color:var(--ink);
-      }
-      .wrap{max-width:1100px; margin:0 auto; padding:0 18px}
-      header{
-        position:sticky; top:0; z-index:10;
-        backdrop-filter: blur(16px);
-        background: color-mix(in srgb, var(--bg) 70%, transparent);
-        border-bottom:1px solid var(--stroke);
-      }
-      .nav{height:74px; display:flex; align-items:center; justify-content:space-between; gap:10px}
-      .brand{display:flex; align-items:center; gap:10px; font-weight:1100}
-      .brand img{width:32px;height:32px;object-fit:contain}
-      .btn{
-        border:1px solid var(--stroke);
-        background: var(--panel2);
-        color:var(--ink);
-        padding:12px 16px;
-        border-radius:999px;
-        font-weight:950;
-        font-size:14px;
-        cursor:pointer;
-        display:inline-flex; align-items:center; justify-content:center;
-        text-decoration:none;
-      }
-      .btnPrimary{border-color:transparent; background:linear-gradient(135deg,var(--a),var(--b)); color:#fff}
-      footer{padding:26px 0 40px; border-top:1px solid var(--stroke); color:var(--muted); font-weight:900}
-      @media (max-width: 980px){ .wrap{padding:0 14px} }
-      `;
-
-      const nav = `
-        <header>
-          <div class="wrap">
-            <div class="nav">
-              <div class="brand">
-                <img src="logo.png" alt="Logo"/>
-                <span>${esc(cfg.brand?.name || "Brand")}</span>
-              </div>
-              <a class="btn btnPrimary" href="#contact">${esc(cfg.cta?.primary?.label || "Kontakt")}</a>
-            </div>
-          </div>
-        </header>
-      `;
-
-      return `<!doctype html>
-<html lang="no">
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>${esc(title)}</title>
-<meta name="description" content="${esc(desc)}"/>
-<style>${css}</style>
-</head>
-<body>
-${nav}
-<main class="wrap">
-${sections}
-</main>
-<footer><div class="wrap">© ${new Date().getFullYear()} ${esc(cfg.brand?.name || "Brand")}</div></footer>
-</body>
-</html>`;
-    }
-
-    function buildSiteIntoPage(){
-      const txt = $("#aiOut").textContent.trim();
-      if(!txt.startsWith("{")) { pop("Generer JSON først"); return; }
-
-      let cfg;
-      try{ cfg = JSON.parse(txt); }
-      catch{ pop("JSON feil (kan ikke parse)"); return; }
-
-      const html = buildStandaloneHTML(cfg);
-
-      const host = $("#builtSite");
-      host.innerHTML = `
-        <iframe title="Built site preview"
-          style="width:100%; height:620px; border:1px solid var(--stroke); border-radius:18px; background:var(--panel);"
-        ></iframe>
-      `;
-      const frame = host.querySelector("iframe");
-      frame.srcdoc = html;
-
-      window.__BUILT_HTML__ = html;
-      pop("Built site ✔");
-    }
-
-    function downloadBuiltHTML(){
-      const html = window.__BUILT_HTML__;
-      if(!html){ pop("Først: Build site"); return; }
-      const blob = new Blob([html], {type:"text/html"});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "site-built.html";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-      pop("Lastet ned site-built.html");
-    }
-
-    $("#buildSite")?.addEventListener("click", buildSiteIntoPage);
-    $("#downloadBuilt")?.addEventListener("click", downloadBuiltHTML);
   </script>
 </body>
 </html>
