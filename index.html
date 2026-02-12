@@ -1,302 +1,1324 @@
-// ===== MU core additions =====
-const $ = (q, el=document)=> el.querySelector(q);
-const $$ = (q, el=document)=> Array.from(el.querySelectorAll(q));
-const fmt = (n)=> n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+<!doctype html>
+<html lang="no">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Markedsutvikler — nettside, SoMe og digital vekst</title>
+  <meta name="description" content="Moderne nettsider, sosiale medier og enkel markedsføring for små bedrifter i Østfold. Fast pris. Rask levering. Start med AI-brief." />
 
-// Theme (persist)
-const themeBtn = $("#themeBtn");
-if(themeBtn){
-  const saved = localStorage.getItem("mu_theme");
-  if(saved) document.documentElement.setAttribute("data-theme", saved);
-  const updateIcon = ()=>{
-    const dark = document.documentElement.getAttribute("data-theme")==="dark";
-    themeBtn.textContent = dark ? "☀️" : "🌙";
-  };
-  updateIcon();
-  themeBtn.addEventListener("click", ()=>{
-    const dark = document.documentElement.getAttribute("data-theme")==="dark";
-    const next = dark ? "" : "dark";
-    if(next) document.documentElement.setAttribute("data-theme", next);
-    else document.documentElement.removeAttribute("data-theme");
-    localStorage.setItem("mu_theme", next);
-    updateIcon();
-  });
-}
-
-// Drawer
-const drawer = $("#drawer");
-const openDrawer = $("#openDrawer");
-const closeDrawer = $("#closeDrawer");
-if(drawer && openDrawer && closeDrawer){
-  openDrawer.addEventListener("click", ()=>{ drawer.classList.add("open"); drawer.setAttribute("aria-hidden","false"); });
-  closeDrawer.addEventListener("click", ()=>{ drawer.classList.remove("open"); drawer.setAttribute("aria-hidden","true"); });
-  drawer.addEventListener("click", (e)=>{ if(e.target===drawer) closeDrawer.click(); });
-  drawer.querySelectorAll("[data-close]").forEach(a=> a.addEventListener("click", ()=> closeDrawer.click()));
-}
-
-// Bottom CTA
-const bottomBrief = $("#bottomBrief");
-const bottomKontakt = $("#bottomKontakt");
-if(bottomBrief) bottomBrief.addEventListener("click", ()=> $("#ai")?.scrollIntoView({behavior:"smooth"}));
-if(bottomKontakt) bottomKontakt.addEventListener("click", ()=> $("#kontakt")?.scrollIntoView({behavior:"smooth"}));
-
-// ===== Case modal (готово под будущие реальные кейсы) =====
-const CASES = {
-  case1:{
-    title:"Pilot — Nettside",
-    subtitle:"Nettside • Struktur • Demo",
-    task:"Tydelig tilbud + CTA.",
-    solution:"Hero + tjenester + priser + kontakt.",
-    result:"Mer fokus og flere henvendelser (demo).",
-    metrics:[{v:"<2s",t:"ytelse (mål)"},{v:"7",t:"dager (mål)"},{v:"+",t:"leads (mål)"}]
-  }
-};
-const caseOverlay = $("#caseOverlay");
-const closeCase = $("#closeCase");
-function openCase(key){
-  const c = CASES[key]; if(!c) return;
-  $("#caseTitle").textContent = c.title;
-  $("#caseSubtitle").textContent = c.subtitle;
-  $("#caseTask").textContent = c.task;
-  $("#caseSolution").textContent = c.solution;
-  $("#caseResult").textContent = c.result;
-  $("#caseMetrics").innerHTML = c.metrics.map(m=>`<div class="metric"><b>${m.v}</b><span>${m.t}</span></div>`).join("");
-  caseOverlay.classList.add("open");
-  caseOverlay.setAttribute("aria-hidden","false");
-  document.body.style.overflow="hidden";
-}
-function closeCaseModal(){
-  caseOverlay.classList.remove("open");
-  caseOverlay.setAttribute("aria-hidden","true");
-  document.body.style.overflow="";
-}
-if(closeCase) closeCase.addEventListener("click", closeCaseModal);
-if(caseOverlay) caseOverlay.addEventListener("click",(e)=>{ if(e.target===caseOverlay) closeCaseModal(); });
-window.addEventListener("keydown",(e)=>{ if(e.key==="Escape" && caseOverlay?.classList.contains("open")) closeCaseModal(); });
-
-// ===== Builder =====
-const opts = $$("#options .opt");
-const totalEl = $("#total");
-const chosenEl = $("#chosen");
-function recalc(){
-  let sum=0, names=[];
-  opts.forEach(o=>{
-    if(o.classList.contains("on")){
-      sum += Number(o.dataset.price);
-      names.push("• " + o.dataset.name);
+  <style>
+    :root{
+      --navy:#0B2A3C;
+      --teal:#2BB3B8;
+      --ink:#071A24;
+      --muted:rgba(7,26,36,.70);
+      --bg:#F6FAFB;
+      --card:rgba(255,255,255,.78);
+      --card2:rgba(255,255,255,.60);
+      --line:rgba(11,42,60,.10);
+      --shadow: 0 18px 60px rgba(7,26,36,.12);
+      --shadow2: 0 10px 28px rgba(7,26,36,.10);
+      --r1:16px;
+      --r2:22px;
+      --max:1180px;
+      --pad:22px;
+      --safeB: env(safe-area-inset-bottom, 0px);
+      --safeT: env(safe-area-inset-top, 0px);
     }
-  });
-  if(totalEl) totalEl.textContent = fmt(sum);
-  if(chosenEl) chosenEl.innerHTML = names.join("<br/>") || "• (ingen valg)";
-}
-opts.forEach((o,i)=>{
-  o.addEventListener("click", ()=>{
-    if(i===0) return; // base always on
-    o.classList.toggle("on");
-    recalc();
-  });
-});
-recalc();
-$("#reset")?.addEventListener("click", ()=>{
-  opts.forEach((o,i)=> o.classList.toggle("on", i===0));
-  recalc();
-});
+    [data-theme="dark"]{
+      --bg:#050D13;
+      --ink:#ECF6FA;
+      --muted:rgba(236,246,250,.72);
+      --card:rgba(10,22,30,.68);
+      --card2:rgba(10,22,30,.52);
+      --line:rgba(255,255,255,.10);
+      --shadow: 0 26px 90px rgba(0,0,0,.55);
+      --shadow2: 0 16px 50px rgba(0,0,0,.35);
+    }
 
-// ===== AI brief → JSON =====
-const briefState = {
-  brand:"Markedsutvikler",
-  bransje:"",
-  by:"",
-  maal:"leads",
-  stil:"premium",
-  tilbud:"",
-  prisnivaa:"middels",
-  primarCTA:"quote",
-  tone:"tydelig",
-  innhold:"case+reviews",
-  integrasjoner:"Google Reviews",
-  språk:"no"
-};
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial;
+      color:var(--ink);
+      background:
+        radial-gradient(1100px 680px at 10% -10%, rgba(43,179,184,.18), transparent 55%),
+        radial-gradient(900px 620px at 92% 8%, rgba(11,42,60,.10), transparent 55%),
+        radial-gradient(900px 620px at 55% 110%, rgba(43,179,184,.10), transparent 55%),
+        var(--bg);
+      overflow-x:hidden;
+    }
+    a{color:inherit; text-decoration:none}
+    .wrap{max-width:var(--max); margin:0 auto; padding:0 var(--pad)}
+    .row{display:flex; align-items:center; justify-content:space-between; gap:14px}
+    .grid{display:grid; gap:14px}
+    .hide{display:none !important}
 
-const steps = [
-  {key:"bransje", label:"Bransje", help:"Hva slags bedrift?", type:"text", ph:"f.eks. frisør / bilpleie"},
-  {key:"by", label:"By/område", help:"For lokal SEO", type:"text", ph:"f.eks. Halden / Østfold"},
-  {key:"maal", label:"Mål", help:"Hva er #1 mål?", type:"select", options:[
-    {v:"leads", t:"flere henvendelser"},{v:"booking", t:"flere bookinger"},{v:"sales", t:"flere salg"},{v:"trust", t:"mer tillit"}
-  ]},
-  {key:"stil", label:"Stil", help:"Hvordan skal det føles?", type:"select", options:[
-    {v:"premium", t:"premium"},{v:"clean", t:"clean"},{v:"tech", t:"tech"},{v:"warm", t:"varm"}
-  ]},
-  {key:"tilbud", label:"Tilbud", help:"Hva selger du? (kort)", type:"textarea", ph:"f.eks. nettside + SoMe"},
-  {key:"prisnivaa", label:"Prisnivå", help:"Lav/middels/høy", type:"select", options:[
-    {v:"lavt", t:"lavt"},{v:"middels", t:"middels"},{v:"høyt", t:"høyt"}
-  ]},
-  {key:"primarCTA", label:"CTA", help:"Hva skal brukeren gjøre?", type:"select", options:[
-    {v:"quote", t:"Få tilbud"},{v:"booking", t:"Bestill"},{v:"call", t:"Ring"},{v:"visit", t:"Finn oss"}
-  ]},
-  {key:"tone", label:"Tone", help:"Hvordan skal teksten være?", type:"select", options:[
-    {v:"tydelig", t:"tydelig"},{v:"vennlig", t:"vennlig"},{v:"direkte", t:"direkte"},{v:"eksklusiv", t:"eksklusiv"}
-  ]},
-  {key:"innhold", label:"Fokus", help:"Hva vil du vise mest?", type:"select", options:[
-    {v:"bilder+priser", t:"bilder + priser"},{v:"før-etter", t:"før/etter"},{v:"case+reviews", t:"case + anmeldelser"},{v:"tjenester+faq", t:"tjenester + FAQ"}
-  ]},
-  {key:"integrasjoner", label:"Integrasjoner", help:"Kun navn, uten keys", type:"text", ph:"f.eks. Vipps, Booking, Meta Pixel"}
-];
+    /* subtle motion */
+    @media (prefers-reduced-motion: reduce){
+      *{animation:none !important; transition:none !important}
+      html{scroll-behavior:auto}
+    }
 
-function ctaText(cta){
-  if(cta==="booking") return "Bestill";
-  if(cta==="call") return "Ring oss";
-  if(cta==="visit") return "Finn oss";
-  return "Få tilbud";
-}
+    /* header */
+    header{
+      position:sticky; top:0; z-index:50;
+      padding-top: var(--safeT);
+      backdrop-filter: blur(16px);
+      background: color-mix(in srgb, var(--bg) 78%, transparent);
+      border-bottom:1px solid color-mix(in srgb, var(--line) 70%, transparent);
+    }
+    .nav{height:74px}
+    .brand{
+      display:flex; align-items:center; gap:12px;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: color-mix(in srgb, var(--card) 82%, transparent);
+      box-shadow: var(--shadow2);
+    }
+    .logo{
+      width:34px; height:34px; border-radius:12px;
+      display:grid; place-items:center;
+      background: linear-gradient(135deg, rgba(11,42,60,.18), rgba(43,179,184,.18));
+      border:1px solid color-mix(in srgb, var(--line) 70%, transparent);
+      overflow:hidden;
+    }
+    .brand strong{font-weight:950; letter-spacing:.2px}
+    .brand small{display:block; margin-top:2px; color:var(--muted); font-weight:800; font-size:11px}
+    nav.menu{display:flex; gap:8px; align-items:center}
+    nav.menu a{
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid transparent;
+      color:var(--muted);
+      font-weight:900;
+      font-size:13px;
+      transition: background .18s ease, transform .18s ease, color .18s ease, border-color .18s ease;
+    }
+    nav.menu a:hover{
+      background: color-mix(in srgb, var(--card) 70%, transparent);
+      border-color: color-mix(in srgb, var(--line) 85%, transparent);
+      color:var(--ink);
+      transform: translateY(-1px);
+    }
+    .right{display:flex; gap:10px; align-items:center}
 
-function buildConfig(s){
-  const integrations = (s.integrasjoner||"").split(",").map(x=>x.trim()).filter(Boolean);
-  return {
-    schema:"MU_CONFIG",
-    generatedAt:new Date().toISOString(),
-    brand:{
-      name:s.brand, industry:s.bransje||"general", location:s.by||"Norway", language:s.språk,
-      tone:s.tone, goals:[s.maal], offer:s.tilbud||"", pricingLevel:s.prisnivaa
-    },
-    theme:{style:s.stil},
-    cta:{primary:{label:ctaText(s.primarCTA), action:"open_contact"}},
-    integrations:{requested: integrations.length ? integrations : ["Google Reviews"]},
-    pages:[{
-      slug:"/",
-      name:"Home",
-      sections:[
-        {id:"hero", type:"hero", title:"Profesjonell start", enabled:true},
-        {id:"services", type:"services", title:"Tjenester", enabled:true},
-        {id:"packages", type:"pricing", title:"Pakker", enabled:true},
-        {id:"proof", type:"social_proof", title:"Bevis", enabled:true},
-        {id:"contact", type:"contact", title:"Kontakt", enabled:true}
-      ]
-    }]
-  };
-}
+    /* buttons */
+    .btn{
+      border:1px solid color-mix(in srgb, var(--line) 85%, transparent);
+      background: color-mix(in srgb, var(--card2) 80%, transparent);
+      color:var(--ink);
+      padding:12px 16px;
+      border-radius:999px;
+      font-weight:950;
+      font-size:14px;
+      cursor:pointer;
+      user-select:none;
+      display:inline-flex; align-items:center; justify-content:center; gap:10px;
+      box-shadow: var(--shadow2);
+      transition: transform .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease, opacity .16s ease;
+      -webkit-tap-highlight-color: transparent;
+      white-space:nowrap;
+    }
+    .btn:hover{transform: translateY(-2px); box-shadow: var(--shadow)}
+    .btn:active{transform: translateY(0)}
+    .btnPrimary{
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--navy), var(--teal));
+      color:#fff;
+      box-shadow: 0 18px 55px rgba(11,42,60,.20);
+    }
+    .btnIcon{width:46px; height:46px; padding:0}
+    .btnGhost{
+      box-shadow:none;
+      background: transparent;
+      border-color: color-mix(in srgb, var(--line) 85%, transparent);
+    }
 
-function renderBrief(mountEl){
-  let step=0;
-  mountEl.innerHTML = `
-    <div class="note"><b>Spørsmål <span data-stepN>1</span>/10</b></div>
-    <div style="margin-top:10px"><b data-qTitle></b></div>
-    <div class="note" style="margin-top:6px" data-qHelp></div>
-    <div style="margin-top:10px" data-qCtrl></div>
-    <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
-      <button class="btn btn-ghost" type="button" data-prev>Tilbake</button>
-      <button class="btn btn-primary" type="button" data-next>Neste</button>
-      <button class="btn btn-primary" type="button" data-gen>Generer JSON</button>
+    /* mobile menu */
+    .burger{display:none}
+    @media (max-width: 980px){
+      nav.menu{display:none}
+      .burger{display:inline-flex}
+      .nav{height:70px}
+    }
+
+    /* drawer */
+    .drawer{
+      position:fixed; inset:0; z-index:200;
+      background: rgba(0,0,0,.55);
+      display:none;
+    }
+    .drawer.open{display:block}
+    .drawerPanel{
+      position:absolute; right:0; top:0; height:100%;
+      width:min(390px, 92vw);
+      background: color-mix(in srgb, var(--card) 92%, transparent);
+      border-left:1px solid var(--line);
+      box-shadow: -20px 0 80px rgba(0,0,0,.35);
+      padding:16px;
+      border-top-left-radius: 22px;
+      border-bottom-left-radius: 22px;
+      transform: translateX(10px);
+      animation: slide .22s ease forwards;
+      overflow:auto;
+      backdrop-filter: blur(16px);
+    }
+    @keyframes slide{to{transform: translateX(0)}}
+    .drawerPanel a{
+      display:block;
+      margin:8px 0;
+      padding:14px 12px;
+      border-radius: 16px;
+      border:1px solid var(--line);
+      background: color-mix(in srgb, var(--card2) 72%, transparent);
+      font-weight:950;
+    }
+    .drawerPanel .x{
+      float:right; width:46px; height:46px;
+      border-radius: 14px;
+      border:1px solid var(--line);
+      background: color-mix(in srgb, var(--card2) 72%, transparent);
+      cursor:pointer;
+      display:grid; place-items:center;
+      font-weight:1000;
+    }
+
+    /* sections */
+    section{padding: 44px 0}
+    .hero{padding: 52px 0 24px}
+    .heroGrid{
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+    @media (max-width: 980px){ .heroGrid{grid-template-columns:1fr} }
+
+    .kicker{
+      display:inline-flex; align-items:center; gap:10px;
+      padding:10px 12px;
+      border-radius: 999px;
+      border:1px solid var(--line);
+      background: color-mix(in srgb, var(--card) 78%, transparent);
+      box-shadow: var(--shadow2);
+      color: var(--muted);
+      font-weight:950;
+      font-size:12px;
+      letter-spacing:.2px;
+    }
+    .kdot{
+      width:10px; height:10px; border-radius:999px;
+      background: linear-gradient(135deg, var(--navy), var(--teal));
+      box-shadow: 0 0 0 8px rgba(43,179,184,.10);
+    }
+    h1{
+      margin:14px 0 10px;
+      font-size: clamp(36px, 4.6vw, 62px);
+      letter-spacing: -0.045em;
+      line-height: 1.02;
+    }
+    .lead{
+      margin:0;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.6;
+      max-width: 62ch;
+      font-weight:850;
+    }
+    .cta{display:flex; gap:12px; flex-wrap:wrap; margin-top:18px}
+    .trust{
+      margin-top: 16px;
+      display:flex; gap:10px; flex-wrap:wrap;
+      color: var(--muted);
+      font-size:13px;
+      font-weight:950;
+    }
+    .trust span{
+      border:1px solid var(--line);
+      background: color-mix(in srgb, var(--card2) 70%, transparent);
+      border-radius: 999px;
+      padding:10px 12px;
+      backdrop-filter: blur(12px);
+    }
+
+    /* hero visual */
+    .heroCard{
+      border-radius: 28px;
+      border:1px solid var(--line);
+      background:
+        radial-gradient(900px 520px at 30% 18%, rgba(43,179,184,.28), transparent 60%),
+        radial-gradient(900px 520px at 85% 10%, rgba(11,42,60,.18), transparent 60%),
+        color-mix(in srgb, var(--card) 75%, transparent);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+      min-height: 430px;
+    }
+    .heroGridlines{
+      position:absolute; inset:-30%;
+      background-image:
+        linear-gradient(color-mix(in srgb, var(--line) 70%, transparent) 1px, transparent 1px),
+        linear-gradient(90deg, color-mix(in srgb, var(--line) 70%, transparent) 1px, transparent 1px);
+      background-size: 48px 48px;
+      transform: rotate(-12deg);
+      opacity:.26;
+      pointer-events:none;
+    }
+    .heroBadge{
+      position:absolute; left:16px; top:16px;
+      border-radius: 999px;
+      padding: 10px 12px;
+      border:1px solid color-mix(in srgb, var(--line) 80%, transparent);
+      background: color-mix(in srgb, var(--card) 82%, transparent);
+      font-weight:950;
+      font-size:12px;
+      color:var(--muted);
+      display:inline-flex; gap:10px; align-items:center;
+      backdrop-filter: blur(14px);
+    }
+    .heroPills{
+      position:absolute; left:16px; right:16px; bottom:16px;
+      display:grid; gap:10px;
+    }
+    .pill{
+      border-radius: 18px;
+      border:1px solid var(--line);
+      background: color-mix(in srgb, var(--card) 70%, transparent);
+      box-shadow: var(--shadow2);
+      padding: 12px 12px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      backdrop-filter: blur(16px);
+    }
+    .pill b{font-size:13px; font-weight:950}
+    .pill small{display:block; margin-top:4px; color:var(--muted); font-weight:850; line-height:1.35}
+    .pill .tag{
+      border-radius:999px;
+      padding:8px 10px;
+      border:1px solid rgba(43,179,184,.35);
+      background: rgba(43,179,184,.10);
+      font-weight:950;
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .spark{
+      position:absolute; right:-120px; top:-140px;
+      width: 420px; height:420px;
+      border-radius: 46% 54% 58% 42% / 44% 42% 58% 56%;
+      background: conic-gradient(from 230deg, rgba(43,179,184,.95), rgba(11,42,60,.75), rgba(43,179,184,.90));
+      opacity:.78;
+      filter: saturate(1.02);
+      animation: float 10s ease-in-out infinite;
+      box-shadow: 0 40px 120px rgba(0,0,0,.16);
+    }
+    @keyframes float{
+      0%,100%{transform: translateY(0) rotate(0deg)}
+      50%{transform: translateY(14px) rotate(6deg)}
+    }
+
+    /* blocks */
+    .head{
+      display:flex; align-items:flex-end; justify-content:space-between; gap:14px;
+      margin-bottom: 14px;
+    }
+    .head h2{margin:0; font-size: clamp(22px, 2.6vw, 34px); letter-spacing:-.02em}
+    .head p{margin:0; color:var(--muted); max-width: 70ch; line-height:1.55; font-weight:900; font-size:14px}
+
+    .cards3{display:grid; grid-template-columns: repeat(3, 1fr); gap:14px}
+    @media (max-width: 980px){ .cards3{grid-template-columns:1fr} }
+
+    .card{
+      border-radius: var(--r2);
+      border:1px solid var(--line);
+      background: color-mix(in srgb, var(--card) 86%, transparent);
+      box-shadow: var(--shadow2);
+      padding: 18px;
+      overflow:hidden;
+      position:relative;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+    .card:hover{transform: translateY(-6px); box-shadow: var(--shadow); border-color: rgba(43,179,184,.38)}
+    .ic{
+      width:52px; height:52px; border-radius: 18px;
+      border:1px solid rgba(43,179,184,.28);
+      background: linear-gradient(135deg, rgba(11,42,60,.16), rgba(43,179,184,.14));
+      display:grid; place-items:center;
+      margin-bottom: 12px;
+      box-shadow: 0 18px 45px rgba(11,42,60,.10);
+      font-size:20px;
+    }
+    .card h3{margin:0 0 8px}
+    .card p{margin:0 0 12px; color:var(--muted); line-height:1.55; font-weight:900}
+    .more{
+      display:inline-flex; align-items:center; gap:8px;
+      font-weight:950;
+      border:1px solid var(--line);
+      background: color-mix(in srgb, var(--card2) 72%, transparent);
+      border-radius: 999px;
+      padding:10px 12px;
+      cursor:pointer;
+    }
+
+    /* pricing */
+    .priceGrid{display:grid; grid-template-columns: repeat(3,1fr); gap:14px}
+    @media (max-width: 980px){ .priceGrid{grid-template-columns:1fr} }
+    .priceCard{
+      border-radius: var(--r2);
+      border:1px solid var(--line);
+      background: color-mix(in srgb, var(--card) 86%, transparent);
+      box-shadow: var(--shadow2);
+      padding: 18px;
+      position:relative;
+      overflow:hidden;
+    }
+    .priceTop{display:flex; align-items:center; justify-content:space-between; gap:10px}
+    .priceCard .badge{
+      border-radius:999px;
+      padding:8px 10px;
+      border:1px solid rgba(43,179,184,.35);
+      background: rgba(43,179,184,.10);
+      font-weight:950;
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .price{
+      font-size:36px;
+      letter-spacing:-.03em;
+      margin:12px 0 4px;
+      font-weight:1000;
+    }
+    .note{color:var(--muted); font-weight:900; font-size:13px; line-height:1.55}
+    .ul{margin:12px 0 0; padding:0; list-style:none; display:grid; gap:10px}
+    .ul li{
+      display:flex; gap:10px; align-items:flex-start;
+      color:var(--muted); font-weight:900;
+      border:1px solid color-mix(in srgb, var(--line) 75%, transparent);
+      background: color-mix(in srgb, var(--card2) 72%, transparent);
+      border-radius: 14px;
+      padding: 10px 12px;
+    }
+    .ul li i{
+      width:18px; height:18px; border-radius:999px;
+      background: linear-gradient(135deg, var(--navy), var(--teal));
+      flex:0 0 auto; margin-top:2px;
+    }
+
+    /* portfolio */
+    .works{display:grid; grid-template-columns: repeat(3, 1fr); gap:14px}
+    @media (max-width: 980px){ .works{grid-template-columns:1fr} }
+    .work{
+      border-radius: var(--r2);
+      border:1px solid var(--line);
+      background: color-mix(in srgb, var(--card) 86%, transparent);
+      box-shadow: var(--shadow2);
+      overflow:hidden;
+      cursor:pointer;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+    .work:hover{transform: translateY(-6px); box-shadow: var(--shadow); border-color: rgba(43,179,184,.38)}
+    .thumb{
+      height: 180px;
+      background:
+        radial-gradient(600px 260px at 30% 20%, rgba(43,179,184,.24), transparent 62%),
+        radial-gradient(600px 260px at 85% 20%, rgba(11,42,60,.16), transparent 62%),
+        color-mix(in srgb, var(--card2) 70%, transparent);
+      border-bottom:1px solid var(--line);
+      position:relative;
+      overflow:hidden;
+    }
+    .thumb::after{
+      content:"";
+      position:absolute; inset:-25%;
+      background-image:
+        linear-gradient(color-mix(in srgb, var(--line) 70%, transparent) 1px, transparent 1px),
+        linear-gradient(90deg, color-mix(in srgb, var(--line) 70%, transparent) 1px, transparent 1px);
+      background-size: 44px 44px;
+      transform: rotate(12deg);
+      opacity:.20;
+    }
+    .work .info{padding:14px}
+    .work b{display:block}
+    .work small{display:block; margin-top:6px; color:var(--muted); font-weight:900; line-height:1.4}
+
+    /* contact */
+    .contact{display:grid; grid-template-columns: 1fr 1fr; gap:14px}
+    @media (max-width: 980px){ .contact{grid-template-columns:1fr} }
+    .panel{
+      border-radius: var(--r2);
+      border:1px solid var(--line);
+      background: color-mix(in srgb, var(--card) 86%, transparent);
+      box-shadow: var(--shadow2);
+      padding: 18px;
+    }
+    label{display:block; font-size:12px; color:var(--muted); font-weight:950; margin:10px 0 6px}
+    input, textarea, select{
+      width:100%;
+      padding:12px 12px;
+      border-radius: 14px;
+      border:1px solid var(--line);
+      background: color-mix(in srgb, var(--card2) 72%, transparent);
+      color:var(--ink);
+      outline:none;
+      font-size:14px;
+      font-weight:900;
+    }
+    textarea{min-height: 120px; resize: vertical}
+    input:focus, textarea:focus, select:focus{
+      border-color: rgba(43,179,184,.55);
+      box-shadow: 0 0 0 5px rgba(43,179,184,.12);
+    }
+    .err{
+      display:none;
+      margin-top:10px;
+      color:#b51f1f;
+      font-weight:950;
+      font-size:12px;
+    }
+
+    /* modal */
+    .overlay{
+      position:fixed; inset:0; z-index:220;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(14px);
+      display:none;
+      padding: 18px;
+    }
+    .overlay.open{display:block}
+    .modal{
+      max-width: 980px;
+      margin: 6vh auto 0;
+      background: color-mix(in srgb, var(--card) 92%, transparent);
+      border:1px solid var(--line);
+      border-radius: 26px;
+      box-shadow: 0 50px 140px rgba(0,0,0,.35);
+      overflow:hidden;
+    }
+    .modalHead{
+      padding: 14px 14px;
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+      border-bottom:1px solid var(--line);
+      background: color-mix(in srgb, var(--card2) 72%, transparent);
+    }
+    .modalHead h3{margin:0; font-size:16px; letter-spacing:-.01em}
+    .modalHead small{display:block; margin-top:6px; color:var(--muted); font-weight:900; line-height:1.35}
+    .close{
+      width:46px; height:46px; border-radius: 14px;
+      border:1px solid var(--line);
+      background: color-mix(in srgb, var(--card2) 72%, transparent);
+      cursor:pointer;
+      display:grid; place-items:center;
+      font-weight:1000;
+    }
+    .modalBody{
+      padding: 14px;
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 14px;
+    }
+    .modalBox{
+      border-radius: 22px;
+      border:1px solid var(--line);
+      background: color-mix(in srgb, var(--card2) 72%, transparent);
+      padding: 14px;
+    }
+    .metricGrid{display:grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px;}
+    .metric{
+      border-radius: 18px;
+      border:1px solid var(--line);
+      background: color-mix(in srgb, var(--card) 78%, transparent);
+      padding: 12px;
+    }
+    .metric b{display:block; font-size:18px}
+    .metric span{display:block; margin-top:6px; color:var(--muted); font-weight:900; font-size:12px}
+
+    @media (max-width: 720px){
+      .overlay{padding: 10px}
+      .modal{
+        margin: 0;
+        max-width: none;
+        height: calc(100dvh - 20px);
+        border-radius: 20px;
+        display:flex;
+        flex-direction:column;
+      }
+      .modalBody{grid-template-columns:1fr; overflow:auto}
+      .metricGrid{grid-template-columns:1fr}
+    }
+
+    /* AI chat widget */
+    .chatFab{
+      position: fixed;
+      right: 14px;
+      bottom: calc(14px + var(--safeB));
+      z-index: 300;
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    .chatHint{
+      display:none;
+      padding:10px 12px;
+      border-radius: 999px;
+      border:1px solid var(--line);
+      background: color-mix(in srgb, var(--card) 88%, transparent);
+      box-shadow: var(--shadow2);
+      color:var(--muted);
+      font-weight:950;
+      font-size:12px;
+      backdrop-filter: blur(14px);
+    }
+    @media (min-width: 980px){ .chatHint{display:block} }
+
+    .chatBtn{
+      width:54px; height:54px;
+      border-radius: 18px;
+      border:1px solid transparent;
+      background: linear-gradient(135deg, var(--navy), var(--teal));
+      box-shadow: 0 20px 60px rgba(11,42,60,.22);
+      color:#fff;
+      cursor:pointer;
+      display:grid; place-items:center;
+      font-weight:1000;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform .16s ease;
+    }
+    .chatBtn:hover{transform: translateY(-2px)}
+    .chat{
+      position: fixed;
+      right: 14px;
+      bottom: calc(84px + var(--safeB));
+      width: min(420px, calc(100vw - 28px));
+      z-index: 310;
+      border-radius: 22px;
+      border:1px solid var(--line);
+      background: color-mix(in srgb, var(--card) 92%, transparent);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      display:none;
+      backdrop-filter: blur(16px);
+    }
+    .chat.open{display:block}
+    .chatTop{
+      padding: 12px 12px;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      border-bottom:1px solid var(--line);
+      background: color-mix(in srgb, var(--card2) 72%, transparent);
+    }
+    .chatTop b{font-size:13px; letter-spacing:.2px}
+    .chatTop small{display:block; margin-top:3px; color:var(--muted); font-weight:900}
+    .chatBody{padding: 12px; display:grid; gap:10px; max-height: 48vh; overflow:auto}
+    .msg{
+      border-radius: 18px;
+      border:1px solid var(--line);
+      background: color-mix(in srgb, var(--card2) 72%, transparent);
+      padding: 10px 12px;
+      color:var(--muted);
+      font-weight:900;
+      line-height:1.45;
+    }
+    .msg.me{
+      background: rgba(43,179,184,.10);
+      border-color: rgba(43,179,184,.30);
+      color: color-mix(in srgb, var(--ink) 92%, transparent);
+    }
+    .chatForm{
+      padding: 12px;
+      border-top:1px solid var(--line);
+      background: color-mix(in srgb, var(--card2) 72%, transparent);
+      display:flex; gap:10px;
+    }
+    .chatForm input{flex:1}
+    .chipRow{display:flex; gap:8px; flex-wrap:wrap}
+    .chip{
+      border:1px solid var(--line);
+      background: color-mix(in srgb, var(--card) 78%, transparent);
+      border-radius: 999px;
+      padding:10px 12px;
+      font-weight:950;
+      cursor:pointer;
+      transition: transform .15s ease, border-color .15s ease;
+      color:var(--muted);
+    }
+    .chip:hover{transform: translateY(-1px); border-color: rgba(43,179,184,.38)}
+
+    footer{
+      padding: 26px 0 42px;
+      border-top:1px solid var(--line);
+      color:var(--muted);
+      font-weight:950;
+      font-size:13px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Drawer -->
+  <div class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawerPanel">
+      <button class="x" id="closeDrawer" aria-label="Close">✕</button>
+      <div style="clear:both; height:8px"></div>
+      <a href="#tjenester" data-close>Tjenester</a>
+      <a href="#priser" data-close>Priser</a>
+      <a href="#portfolio" data-close>Portfolio</a>
+      <a href="#abonnement" data-close>Abonnement</a>
+      <a href="#kontakt" data-close>Kontakt</a>
+      <div style="height:12px"></div>
+      <button class="btn btnPrimary" id="drawerStart">Start med AI-brief</button>
     </div>
-  `;
+  </div>
 
-  const stepN = mountEl.querySelector("[data-stepN]");
-  const qTitle= mountEl.querySelector("[data-qTitle]");
-  const qHelp = mountEl.querySelector("[data-qHelp]");
-  const qCtrl = mountEl.querySelector("[data-qCtrl]");
-  const prevQ = mountEl.querySelector("[data-prev]");
-  const nextQ = mountEl.querySelector("[data-next]");
-  const genQ  = mountEl.querySelector("[data-gen]");
+  <!-- Case modal -->
+  <div class="overlay" id="caseOverlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Case">
+      <div class="modalHead">
+        <div>
+          <h3 id="caseTitle">Case</h3>
+          <small id="caseSubtitle">—</small>
+        </div>
+        <button class="close" id="closeCase" aria-label="Close">✕</button>
+      </div>
+      <div class="modalBody">
+        <div class="modalBox">
+          <b>Oppgave</b>
+          <div id="caseTask" style="margin-top:8px; color:var(--muted); font-weight:900; line-height:1.55"></div>
+          <div style="height:12px"></div>
+          <b>Løsning</b>
+          <div id="caseSolution" style="margin-top:8px; color:var(--muted); font-weight:900; line-height:1.55"></div>
+        </div>
+        <div class="modalBox">
+          <b>Resultat</b>
+          <div id="caseResult" style="margin-top:8px; color:var(--muted); font-weight:900; line-height:1.55"></div>
+          <div class="metricGrid" id="caseMetrics"></div>
+          <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap">
+            <a class="btn btnPrimary" href="#kontakt" id="caseToKontakt">Få tilbud</a>
+            <button class="btn" type="button" id="caseToChat">Start AI-brief</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  function paint(){
-    const s = steps[step];
-    stepN.textContent = String(step+1);
-    qTitle.textContent = s.label;
-    qHelp.textContent = s.help;
+  <header>
+    <div class="wrap">
+      <div class="row nav">
+        <a class="brand" href="#top" aria-label="Markedsutvikler">
+          <span class="logo" aria-hidden="true">
+            <!-- simple MU mark (inline) -->
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 18V6h3.3l3.7 7 3.7-7H19v12h-2.6V10.5l-3.2 6.1h-2.4L7.6 10.5V18H5Z" fill="currentColor" opacity=".92"/>
+              <path d="M5 18V6h3.3l3.7 7 3.7-7H19v12h-2.6V10.5l-3.2 6.1h-2.4L7.6 10.5V18H5Z" stroke="rgba(43,179,184,.45)" stroke-width="0.6"/>
+            </svg>
+          </span>
+          <div>
+            <strong>Markedsutvikler</strong>
+            <small>Østfold • nettside • SoMe • vekst</small>
+          </div>
+        </a>
 
-    if(s.type==="text"){
-      qCtrl.innerHTML = `<input placeholder="${s.ph||""}" value="${briefState[s.key]||""}" style="width:100%;padding:12px 14px;border-radius:14px;border:1px solid rgba(15,23,42,.10);background:rgba(255,255,255,.70);font-weight:800">`;
-      qCtrl.querySelector("input").addEventListener("input",(e)=> briefState[s.key]=e.target.value);
-    } else if(s.type==="textarea"){
-      qCtrl.innerHTML = `<textarea placeholder="${s.ph||""}" style="width:100%;min-height:90px;padding:12px 14px;border-radius:14px;border:1px solid rgba(15,23,42,.10);background:rgba(255,255,255,.70);font-weight:800"></textarea>`;
-      qCtrl.querySelector("textarea").value = (briefState[s.key]||"");
-      qCtrl.querySelector("textarea").addEventListener("input",(e)=> briefState[s.key]=e.target.value);
-    } else {
-      qCtrl.innerHTML = `<select style="width:100%;padding:12px 14px;border-radius:14px;border:1px solid rgba(15,23,42,.10);background:rgba(255,255,255,.70);font-weight:800">
-        ${s.options.map(o=>`<option value="${o.v}" ${briefState[s.key]===o.v?"selected":""}>${o.t}</option>`).join("")}
-      </select>`;
-      qCtrl.querySelector("select").addEventListener("change",(e)=> briefState[s.key]=e.target.value);
+        <nav class="menu" aria-label="Menu">
+          <a href="#tjenester">Tjenester</a>
+          <a href="#priser">Priser</a>
+          <a href="#portfolio">Portfolio</a>
+          <a href="#abonnement">Abonnement</a>
+          <a href="#kontakt">Kontakt</a>
+        </nav>
+
+        <div class="right">
+          <button class="btn btnIcon btnGhost" id="themeBtn" aria-label="Toggle theme">🌙</button>
+          <button class="btn btnIcon burger" id="openDrawer" aria-label="Open menu">☰</button>
+          <button class="btn btnPrimary" id="topCTA">Start AI-brief</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="wrap heroGrid">
+        <div>
+          <span class="kicker"><span class="kdot"></span> Premium uttrykk • Enkel prosess • Fast pris</span>
+          <h1>En nettside som ser proff ut — og skaper henvendelser.</h1>
+          <p class="lead">
+            Vi bygger nettsider, sosiale medier og enkel markedsføring for små bedrifter i Østfold.
+            Ingen telefonkrav — start med en kort AI-brief og få plan + prisforslag.
+          </p>
+
+          <div class="cta">
+            <button class="btn btnPrimary" id="heroStart">Start AI-brief</button>
+            <a class="btn" href="#priser">Se priser</a>
+            <button class="btn" id="openCase1">Se case</button>
+          </div>
+
+          <div class="trust">
+            <span>⚡ Levering 3–10 dager</span>
+            <span>✅ Mobil først</span>
+            <span>🧠 Klar struktur som konverterer</span>
+          </div>
+        </div>
+
+        <div class="heroCard" aria-hidden="true">
+          <div class="heroGridlines"></div>
+          <div class="spark"></div>
+
+          <div class="heroBadge">
+            <span class="kdot"></span>
+            <b>Lanseringskampanje</b>
+          </div>
+
+          <div class="heroPills">
+            <div class="pill">
+              <div>
+                <b>Første 5 nettsider</b>
+                <small>10 000 NOK (eks. mva) • begrenset</small>
+              </div>
+              <span class="tag">10 000</span>
+            </div>
+            <div class="pill">
+              <div>
+                <b>SoMe oppsett</b>
+                <small>Profiler + første innhold</small>
+              </div>
+              <span class="tag">5 000</span>
+            </div>
+            <div class="pill">
+              <div>
+                <b>Abonnement</b>
+                <small>Oppdateringer, SEO og innhold</small>
+              </div>
+              <span class="tag">fra 1 990</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SERVICES -->
+    <section id="tjenester">
+      <div class="wrap">
+        <div class="head">
+          <div>
+            <h2>Tjenester</h2>
+            <p>Én leverandør for nettside + SoMe + enkel markedsføring. Raskt og ryddig.</p>
+          </div>
+        </div>
+
+        <div class="cards3">
+          <article class="card">
+            <div class="ic">🧱</div>
+            <h3>Nettsider</h3>
+            <p>Landing eller flersiders. Premium design, tydelig CTA, mobil først og rask lastetid.</p>
+            <a class="more" href="#priser">Se pakker →</a>
+          </article>
+
+          <article class="card">
+            <div class="ic">📣</div>
+            <h3>Sosiale medier</h3>
+            <p>Oppsett av profiler, visuell stil, maler og første innlegg så du kan starte med en gang.</p>
+            <button class="more" type="button" id="svcChat">Start AI-brief →</button>
+          </article>
+
+          <article class="card">
+            <div class="ic">🎯</div>
+            <h3>Markedsføring</h3>
+            <p>Enkel strategi, SEO-grunnmur og tiltak som gir mer klarhet (ikke støy).</p>
+            <a class="more" href="#abonnement">Se abonnement →</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="priser">
+      <div class="wrap">
+        <div class="head">
+          <div>
+            <h2>Priser</h2>
+            <p>Fast pris. Rask leveranse. Alt kan skaleres senere.</p>
+          </div>
+        </div>
+
+        <div class="priceGrid">
+          <div class="priceCard">
+            <div class="priceTop">
+              <b>Start</b>
+              <span class="badge">Kampanje</span>
+            </div>
+            <div class="price">10 000</div>
+            <div class="note">NOK (eks. mva) • første 5 kunder</div>
+            <ul class="ul">
+              <li><i></i> 1 side (landing) + kontakt</li>
+              <li><i></i> Premium layout + mobil</li>
+              <li><i></i> Publisering + grunn SEO</li>
+            </ul>
+            <div style="margin-top:14px">
+              <button class="btn btnPrimary" id="buyStart">Start AI-brief</button>
+            </div>
+          </div>
+
+          <div class="priceCard">
+            <div class="priceTop">
+              <b>SoMe oppsett</b>
+              <span class="badge">Rask start</span>
+            </div>
+            <div class="price">5 000</div>
+            <div class="note">NOK (eks. mva)</div>
+            <ul class="ul">
+              <li><i></i> Profil(er) + bio + lenker</li>
+              <li><i></i> Visuell stil + maler</li>
+              <li><i></i> Første innhold (startpakke)</li>
+            </ul>
+            <div style="margin-top:14px">
+              <button class="btn btnPrimary" id="buySoMe">Start AI-brief</button>
+            </div>
+          </div>
+
+          <div class="priceCard">
+            <div class="priceTop">
+              <b>Standard</b>
+              <span class="badge">Mest valgt</span>
+            </div>
+            <div class="price">fra 19 900</div>
+            <div class="note">NOK (eks. mva)</div>
+            <ul class="ul">
+              <li><i></i> 3–6 sider + priser/pakker</li>
+              <li><i></i> Tekststruktur + CTA-flyt</li>
+              <li><i></i> SEO-struktur + ytelse</li>
+            </ul>
+            <div style="margin-top:14px">
+              <a class="btn btnPrimary" href="#kontakt">Få tilbud</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PORTFOLIO -->
+    <section id="portfolio">
+      <div class="wrap">
+        <div class="head">
+          <div>
+            <h2>Portfolio</h2>
+            <p>Foreløpig lite, men kvalitet først. Klikk for case-modal.</p>
+          </div>
+        </div>
+
+        <div class="works">
+          <article class="work" data-case="case1">
+            <div class="thumb"></div>
+            <div class="info">
+              <b>Pilot: lokal tjeneste</b>
+              <small>Landing + priser + CTA. Bygget for henvendelser.</small>
+            </div>
+          </article>
+
+          <article class="work" data-case="case2">
+            <div class="thumb"></div>
+            <div class="info">
+              <b>SoMe: visuell stil</b>
+              <small>Maler + bio + første innhold (demo-case).</small>
+            </div>
+          </article>
+
+          <article class="work" data-case="case3">
+            <div class="thumb"></div>
+            <div class="info">
+              <b>Strategi: én side</b>
+              <small>Kanalvalg + budskap + enkel plan (demo).</small>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- SUBSCRIPTION -->
+    <section id="abonnement">
+      <div class="wrap">
+        <div class="head">
+          <div>
+            <h2>Abonnement</h2>
+            <p>For deg som vil slippe å tenke på innhold, oppdateringer og synlighet.</p>
+          </div>
+        </div>
+
+        <div class="cards3">
+          <article class="card">
+            <div class="ic">🛠️</div>
+            <h3>Vedlikehold</h3>
+            <p>Oppdateringer, små endringer, sikkerhet og backup.</p>
+            <div class="note"><b>fra 1 990 NOK/mnd</b></div>
+          </article>
+
+          <article class="card">
+            <div class="ic">🔎</div>
+            <h3>SEO + innhold</h3>
+            <p>Struktur, tekster, lokale søk og månedlige forbedringer.</p>
+            <div class="note"><b>fra 3 990 NOK/mnd</b></div>
+          </article>
+
+          <article class="card">
+            <div class="ic">📅</div>
+            <h3>SoMe drift</h3>
+            <p>Plan, posting og kontinuitet i samme visuelle stil.</p>
+            <div class="note"><b>fra 4 990 NOK/mnd</b></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="kontakt">
+      <div class="wrap">
+        <div class="head">
+          <div>
+            <h2>Kontakt</h2>
+            <p>Ingen telefon nødvendig. Send kort info, eller start med AI-brief.</p>
+          </div>
+          <div>
+            <button class="btn btnPrimary" id="kontaktChat">Start AI-brief</button>
+          </div>
+        </div>
+
+        <div class="contact">
+          <div class="panel">
+            <b>Rask brief</b>
+            <div class="note" style="margin-top:10px">
+              1) Hva selger du?<br/>
+              2) By/område?<br/>
+              3) Ønsker du nettside, SoMe eller begge?<br/>
+              4) Har du logo/bilder/priser?
+            </div>
+
+            <div style="height:12px"></div>
+
+            <div class="note" style="border:1px solid var(--line); border-radius:16px; padding:12px; background: color-mix(in srgb, var(--card2) 72%, transparent);">
+              <b>Tips:</b> Bruk chat-knappen nederst. Den samler alt og fyller inn melding for deg.
+            </div>
+
+            <div style="height:12px"></div>
+            <button class="btn btnPrimary" id="prefillMsg">Fyll eksempel</button>
+          </div>
+
+          <form class="panel" id="form" novalidate>
+            <label for="name">Navn</label>
+            <input id="name" required placeholder="Navn" />
+
+            <label for="email">E-post</label>
+            <input id="email" type="email" required placeholder="navn@firma.no" />
+
+            <label for="type">Hva trenger du?</label>
+            <select id="type" required>
+              <option value="">Velg…</option>
+              <option>Nettside</option>
+              <option>SoMe</option>
+              <option>Nettside + SoMe</option>
+              <option>Abonnement</option>
+            </select>
+
+            <label for="msg">Melding</label>
+            <textarea id="msg" required placeholder="Kort om hva du trenger…"></textarea>
+
+            <div class="err" id="err">Sjekk feltene (navn, e-post, type, melding).</div>
+
+            <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap">
+              <button class="btn btnPrimary" type="submit">Send (demo)</button>
+              <button class="btn" type="button" id="copyLead">Kopier melding</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrap row">
+        <div>© <span id="year"></span> Markedsutvikler • Østfold</div>
+        <div class="row" style="gap:10px; flex-wrap:wrap; justify-content:flex-end">
+          <a href="#tjenester">Tjenester</a>
+          <a href="#priser">Priser</a>
+          <a href="#portfolio">Portfolio</a>
+          <a href="#kontakt">Kontakt</a>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- AI Chat -->
+  <div class="chatFab" aria-hidden="false">
+    <div class="chatHint">Start med AI-brief</div>
+    <button class="chatBtn" id="chatToggle" aria-label="Open AI brief">AI</button>
+  </div>
+
+  <div class="chat" id="chat" aria-label="AI brief panel">
+    <div class="chatTop">
+      <div>
+        <b>AI-brief (uten telefon)</b>
+        <small>3 minutter → klar melding</small>
+      </div>
+      <button class="btn btnIcon btnGhost" id="chatClose" aria-label="Close">✕</button>
+    </div>
+
+    <div class="chatBody" id="chatBody">
+      <!-- messages injected -->
+    </div>
+
+    <div class="chatForm">
+      <input id="chatInput" placeholder="Skriv kort…" autocomplete="off" />
+      <button class="btn btnPrimary" id="chatSend" type="button">Send</button>
+    </div>
+  </div>
+
+  <script>
+    // utils
+    const $ = (q, el=document)=> el.querySelector(q);
+    const $$ = (q, el=document)=> Array.from(el.querySelectorAll(q));
+    $("#year").textContent = new Date().getFullYear();
+
+    // theme
+    const themeBtn = $("#themeBtn");
+    const savedTheme = localStorage.getItem("mu_theme");
+    if(savedTheme) document.documentElement.setAttribute("data-theme", savedTheme);
+    const setThemeIcon = ()=>{
+      const dark = document.documentElement.getAttribute("data-theme")==="dark";
+      themeBtn.textContent = dark ? "☀️" : "🌙";
+    };
+    setThemeIcon();
+    themeBtn.addEventListener("click", ()=>{
+      const dark = document.documentElement.getAttribute("data-theme")==="dark";
+      const next = dark ? "" : "dark";
+      if(next) document.documentElement.setAttribute("data-theme", next);
+      else document.documentElement.removeAttribute("data-theme");
+      localStorage.setItem("mu_theme", next);
+      setThemeIcon();
+    });
+
+    // drawer
+    const drawer = $("#drawer");
+    $("#openDrawer").addEventListener("click", ()=>{ drawer.classList.add("open"); drawer.setAttribute("aria-hidden","false"); });
+    $("#closeDrawer").addEventListener("click", ()=>{ drawer.classList.remove("open"); drawer.setAttribute("aria-hidden","true"); });
+    drawer.addEventListener("click",(e)=>{ if(e.target===drawer) $("#closeDrawer").click(); });
+    drawer.querySelectorAll("[data-close]").forEach(a=> a.addEventListener("click", ()=>$("#closeDrawer").click()));
+    $("#drawerStart").addEventListener("click", ()=>{ $("#closeDrawer").click(); openChat(); });
+
+    // modal cases
+    const CASES = {
+      case1:{
+        title:"Pilot: lokal tjeneste",
+        subtitle:"Nettside • Struktur • Demo",
+        task:"Trengte en rask og proff landing som gjør det enkelt å sende forespørsel.",
+        solution:"Hero + tydelige pakker + CTA + kontakt. Mobil først, rask last.",
+        result:"Bedre klarhet, høyere kvalitet på henvendelser (demo-mål).",
+        metrics:[{v:"<2s",t:"ytelse (mål)"},{v:"3–10",t:"dager levering"},{v:"+X",t:"leads (mål)"}]
+      },
+      case2:{
+        title:"SoMe: visuell stil",
+        subtitle:"SoMe • Maler • Demo",
+        task:"Ujevnt uttrykk og lite tid til posting.",
+        solution:"Profiloppsett + bio + maler + første innlegg.",
+        result:"Mer profesjonell feed og enklere rutine (demo).",
+        metrics:[{v:"10+",t:"maler"},{v:"1",t:"stil-system"},{v:"48t",t:"start (mål)"}]
+      },
+      case3:{
+        title:"Strategi: én side",
+        subtitle:"Plan • Fokus • Demo",
+        task:"Mange ideer, ingen plan som blir gjort.",
+        solution:"Målgruppe + budskap + 2 kanaler + ukentlig plan.",
+        result:"Klar retning og start samme uke (demo).",
+        metrics:[{v:"2",t:"kanaler"},{v:"1",t:"side"},{v:"4",t:"uker kickoff"}]
+      }
+    };
+
+    const caseOverlay = $("#caseOverlay");
+    function openCase(key){
+      const c = CASES[key]; if(!c) return;
+      $("#caseTitle").textContent = c.title;
+      $("#caseSubtitle").textContent = c.subtitle;
+      $("#caseTask").textContent = c.task;
+      $("#caseSolution").textContent = c.solution;
+      $("#caseResult").textContent = c.result;
+      $("#caseMetrics").innerHTML = c.metrics.map(m=>`<div class="metric"><b>${m.v}</b><span>${m.t}</span></div>`).join("");
+      caseOverlay.classList.add("open");
+      caseOverlay.setAttribute("aria-hidden","false");
+      document.body.style.overflow="hidden";
+    }
+    function closeCase(){
+      caseOverlay.classList.remove("open");
+      caseOverlay.setAttribute("aria-hidden","true");
+      document.body.style.overflow="";
+    }
+    $("#closeCase").addEventListener("click", closeCase);
+    caseOverlay.addEventListener("click",(e)=>{ if(e.target===caseOverlay) closeCase(); });
+    window.addEventListener("keydown",(e)=>{ if(e.key==="Escape"){ if(caseOverlay.classList.contains("open")) closeCase(); if($("#chat").classList.contains("open")) closeChat(); }});
+
+    $$(".work").forEach(w=> w.addEventListener("click", ()=> openCase(w.dataset.case)));
+    $("#openCase1").addEventListener("click", ()=> openCase("case1"));
+    $("#caseToChat").addEventListener("click", ()=>{ closeCase(); openChat(); });
+
+    // contact form demo
+    const form = $("#form");
+    const err = $("#err");
+    form.addEventListener("submit",(e)=>{
+      e.preventDefault();
+      const name = $("#name").value.trim();
+      const email = $("#email").value.trim();
+      const type = $("#type").value.trim();
+      const msg = $("#msg").value.trim();
+      const ok = name && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && type && msg.length>8;
+      if(!ok){ err.style.display="block"; return; }
+      err.style.display="none";
+      alert("Sendt (demo). Koble til ekte e-post/CRM senere.");
+      form.reset();
+    });
+
+    $("#prefillMsg").addEventListener("click", ()=>{
+      $("#name").value = "Ola Nordmann";
+      $("#email").value = "ola@firma.no";
+      $("#type").value = "Nettside + SoMe";
+      $("#msg").value = "Hei! Vi trenger en proff nettside + oppsett av SoMe. Vi holder til i Østfold. Har logo, noen bilder og priser. Ønsker premium/clean stil. Mål: flere henvendelser.";
+    });
+
+    $("#copyLead").addEventListener("click", async ()=>{
+      const txt = [
+        "Navn: " + ($("#name").value||""),
+        "E-post: " + ($("#email").value||""),
+        "Type: " + ($("#type").value||""),
+        "Melding: " + ($("#msg").value||"")
+      ].join("\n");
+      try{ await navigator.clipboard.writeText(txt); alert("Kopiert"); }
+      catch{ alert("iOS: marker og kopier manuelt"); }
+    });
+
+    // CTA buttons -> chat
+    const openChatBtns = ["topCTA","heroStart","svcChat","kontaktChat","buyStart","buySoMe"].map(id=>$("#"+id));
+    openChatBtns.forEach(b=> b && b.addEventListener("click", openChat));
+
+    // chat logic (brief wizard)
+    const chat = $("#chat");
+    const chatBody = $("#chatBody");
+    const chatInput = $("#chatInput");
+    const chatSend = $("#chatSend");
+
+    const state = JSON.parse(localStorage.getItem("mu_brief") || "null") || {
+      step:0,
+      answers:{
+        business:"",
+        location:"",
+        need:"",
+        style:"premium/clean",
+        goal:"flere henvendelser",
+        assets:"logo/bilder/priser (hva du har)"
+      }
+    };
+
+    const steps = [
+      {k:"business", q:"Hva selger du? (1 setning)"},
+      {k:"location", q:"Hvor holder du til? (by/område)"},
+      {k:"need", q:"Hva trenger du nå? (nettside / SoMe / begge)"},
+      {k:"style", q:"Hvilken stil? (premium/clean/varm/tech)"},
+      {k:"goal", q:"Hva er målet? (henvendelser / booking / salg / tillit)"},
+      {k:"assets", q:"Har du logo, bilder og priser? (kort)"},
+    ];
+
+    function save(){ localStorage.setItem("mu_brief", JSON.stringify(state)); }
+    function addMsg(text, me=false){
+      const div = document.createElement("div");
+      div.className = "msg" + (me ? " me" : "");
+      div.textContent = text;
+      chatBody.appendChild(div);
+      chatBody.scrollTop = chatBody.scrollHeight;
     }
 
-    prevQ.disabled = step===0;
-    nextQ.style.display = step===steps.length-1 ? "none" : "";
-  }
+    function renderQuickChips(){
+      const wrap = document.createElement("div");
+      wrap.className = "chipRow";
+      const presets = ["Nettside", "SoMe", "Nettside + SoMe", "Abonnement", "Halden", "Østfold", "Premium/clean"];
+      presets.forEach(t=>{
+        const c = document.createElement("button");
+        c.type = "button";
+        c.className = "chip";
+        c.textContent = t;
+        c.addEventListener("click", ()=>{ chatInput.value = t; chatInput.focus(); });
+        wrap.appendChild(c);
+      });
+      chatBody.appendChild(wrap);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
 
-  prevQ.addEventListener("click", ()=>{ if(step>0){ step--; paint(); } });
-  nextQ.addEventListener("click", ()=>{ if(step<steps.length-1){ step++; paint(); } });
+    function openChat(){
+      chat.classList.add("open");
+      if(chatBody.childElementCount===0){
+        addMsg("Hei! Jeg samler en kort brief. Svar kort — så fyller jeg inn meldingen for deg.");
+        renderQuickChips();
+        addMsg(steps[state.step].q);
+      } else {
+        addMsg("Fortsett der vi slapp:", false);
+        addMsg(steps[state.step].q);
+      }
+      chatInput.focus();
+    }
 
-  genQ.addEventListener("click", ()=>{
-    const cfg = buildConfig(briefState);
-    $("#aiOut").textContent = JSON.stringify(cfg, null, 2);
-    $("#preview").textContent = `Home sections: ${cfg.pages[0].sections.filter(s=>s.enabled).map(s=>s.type).join(", ")}`;
-  });
+    function closeChat(){
+      chat.classList.remove("open");
+    }
 
-  paint();
-}
-renderBrief($("#briefBlock"));
+    $("#chatToggle").addEventListener("click", ()=> chat.classList.contains("open") ? closeChat() : openChat());
+    $("#chatClose").addEventListener("click", closeChat);
 
-// Builder -> brief shortcut
-$("#builderToBrief")?.addEventListener("click", ()=>{
-  const chosen = opts.filter(o=>o.classList.contains("on")).map(o=>o.dataset.name).join(", ");
-  briefState.tilbud = chosen ? chosen : briefState.tilbud;
-});
+    function buildLeadText(){
+      const a = state.answers;
+      return [
+        "Hei! Her er en kort brief:",
+        "",
+        "• Hva selger vi: " + (a.business||"-"),
+        "• Lokasjon: " + (a.location||"-"),
+        "• Behov: " + (a.need||"-"),
+        "• Stil: " + (a.style||"-"),
+        "• Mål: " + (a.goal||"-"),
+        "• Har vi: " + (a.assets||"-"),
+        "",
+        "Ønsker forslag + pris + tidslinje. Takk!"
+      ].join("\n");
+    }
 
-// Copy / download JSON
-$("#copyOut")?.addEventListener("click", async ()=>{
-  const txt = $("#aiOut").textContent.trim();
-  if(!txt.startsWith("{")) return;
-  try{ await navigator.clipboard.writeText(txt); }catch{}
-});
-$("#downloadJson")?.addEventListener("click", ()=>{
-  const txt = $("#aiOut").textContent.trim();
-  if(!txt.startsWith("{")) return;
-  const blob = new Blob([txt], {type:"application/json"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href=url; a.download="MU_CONFIG.json";
-  document.body.appendChild(a); a.click(); a.remove();
-  URL.revokeObjectURL(url);
-});
+    function finish(){
+      addMsg("Perfekt. Jeg har laget en ferdig melding. Jeg fyller den inn i kontaktskjemaet nå.");
+      const txt = buildLeadText();
+      $("#type").value = state.answers.need.includes("SoMe") && state.answers.need.includes("Nettside") ? "Nettside + SoMe" :
+                         state.answers.need.includes("SoMe") ? "SoMe" :
+                         state.answers.need.includes("Nettside") ? "Nettside" : "Nettside + SoMe";
+      $("#msg").value = txt;
+      $("#kontakt").scrollIntoView({behavior:"smooth"});
+      save();
+    }
 
-// Build site (safe preview)
-function esc(s=""){ return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-function buildStandaloneHTML(cfg){
-  const title = cfg.brand?.name || "Site";
-  const cta = cfg.cta?.primary?.label || "Kontakt";
-  return `<!doctype html><html lang="no"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>${esc(title)}</title><style>
-  body{margin:0;font-family:system-ui;background:#f6f8f9;color:#071a24}
-  .wrap{max-width:980px;margin:0 auto;padding:18px}
-  .btn{display:inline-flex;padding:12px 16px;border-radius:999px;background:linear-gradient(135deg,#0B2A3C,#2BB3B8);color:#fff;text-decoration:none;font-weight:800}
-  .card{margin-top:14px;padding:14px;border-radius:18px;background:#fff;border:1px solid rgba(10,28,40,.10)}
-  </style></head><body>
-  <div class="wrap">
-    <h1 style="margin:0 0 8px">${esc(title)}</h1>
-    <p style="margin:0 0 14px;opacity:.8">Built from MU_CONFIG.json</p>
-    <a class="btn" href="#contact">${esc(cta)}</a>
-    <div class="card">Sections: ${(cfg.pages?.[0]?.sections||[]).filter(s=>s.enabled).map(s=>esc(s.type)).join(", ")}</div>
-    <div id="contact" class="card"><b>Kontakt</b><div style="margin-top:8px;opacity:.8">Form / email / phone</div></div>
-  </div>
-  </body></html>`;
-}
-$("#buildSite")?.addEventListener("click", ()=>{
-  const txt = $("#aiOut").textContent.trim();
-  if(!txt.startsWith("{")) return;
-  let cfg; try{ cfg=JSON.parse(txt); }catch{ return; }
-  const html = buildStandaloneHTML(cfg);
-  $("#builtSite").innerHTML = `<iframe style="width:100%;height:520px;border:1px solid rgba(15,23,42,.10);border-radius:18px;background:#fff" title="Built site"></iframe>`;
-  $("#builtSite iframe").srcdoc = html;
-  window.__BUILT_HTML__ = html;
-});
-$("#downloadBuilt")?.addEventListener("click", ()=>{
-  const html = window.__BUILT_HTML__;
-  if(!html) return;
-  const blob = new Blob([html], {type:"text/html"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href=url; a.download="site-built.html";
-  document.body.appendChild(a); a.click(); a.remove();
-  URL.revokeObjectURL(url);
-});
+    function onSend(){
+      const v = chatInput.value.trim();
+      if(!v) return;
+      addMsg(v, true);
 
-  
+      const s = steps[state.step];
+      state.answers[s.k] = v;
+
+      state.step++;
+      save();
+      chatInput.value = "";
+
+      if(state.step >= steps.length){
+        finish();
+        return;
+      }
+      addMsg(steps[state.step].q);
+    }
+
+    chatSend.addEventListener("click", onSend);
+    chatInput.addEventListener("keydown", (e)=>{ if(e.key==="Enter"){ e.preventDefault(); onSend(); } });
+
+    // top actions
+    $("#bottomKontakt")?.addEventListener("click", ()=> $("#kontakt").scrollIntoView({behavior:"smooth"}));
+
+    // optional: autostart chat on first visit (comment out if you don't want)
+    // if(!localStorage.getItem("mu_seen")){ localStorage.setItem("mu_seen","1"); setTimeout(openChat, 900); }
+  </script>
+</body>
+</html>
